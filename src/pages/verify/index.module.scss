@@ -529,17 +529,180 @@
 
 .primaryBtn {
   @include button-reset;
-  flex: 2;
-  height: 96rpx;
+  flex: 1;
+  height: 88rpx;
   display: flex;
   align-items: center;
   justify-content: center;
   background: linear-gradient(135deg, $color-primary 0%, #059669 100%);
   border-radius: $radius-pill;
-  font-size: 28rpx;
-  font-weight: 600;
+  font-size: 30rpx;
+  font-weight: 700;
   color: #fff;
   box-shadow: $shadow-md;
+}
+
+.accountInfoCard {
+  margin: $spacing-lg;
+  padding: $spacing-lg;
+  background: #fff;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+}
+
+.accountInfoHeader {
+  display: flex;
+  gap: $spacing-md;
+  align-items: center;
+  margin-bottom: $spacing-md;
+  padding-bottom: $spacing-md;
+  border-bottom: 1rpx solid $color-border-light;
+}
+
+.accountCover {
+  width: 140rpx;
+  height: 140rpx;
+  border-radius: $radius-md;
+  flex-shrink: 0;
+}
+
+.accountInfoMain {
+  flex: 1;
+  min-width: 0;
+}
+
+.accountTitle {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: $color-text-primary;
+  line-height: 1.3;
+  margin-bottom: 10rpx;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.accountMetaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+}
+
+.accountMetaTag {
+  padding: 4rpx 14rpx;
+  background: $color-bg-gray;
+  border-radius: $radius-sm;
+  font-size: 22rpx;
+  color: $color-text-secondary;
+}
+
+.accountGameTag {
+  background: $color-primary-bg;
+  color: $color-primary;
+  font-weight: 500;
+}
+
+.accountPriceRow {
+  display: flex;
+  align-items: baseline;
+  gap: 16rpx;
+}
+
+.accountCurrentPrice {
+  font-size: 40rpx;
+  font-weight: 700;
+  color: $color-error;
+}
+
+.accountCurrentPrice small {
+  font-size: 26rpx;
+  font-weight: 500;
+  margin-right: 2rpx;
+}
+
+.screenshotTrace {
+  margin-bottom: $spacing-md;
+}
+
+.screenshotTraceTitle {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+  padding-left: 12rpx;
+  border-left: 6rpx solid $color-primary;
+}
+
+.screenshotTraceGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12rpx;
+}
+
+.screenshotTraceItem {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  border-radius: $radius-sm;
+  overflow: hidden;
+  background: $color-bg-gray;
+}
+
+.screenshotTraceImg {
+  width: 100%;
+  height: 100%;
+}
+
+.screenshotTraceLabel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 6rpx 8rpx;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 18rpx;
+  text-align: center;
+}
+
+.riskBox {
+  padding: $spacing-md;
+  border-radius: $radius-md;
+  background: $color-accent-bg;
+  border: 2rpx solid rgba(249, 115, 22, 0.25);
+  margin-top: $spacing-md;
+}
+
+.riskBoxTitle {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  font-size: 26rpx;
+  font-weight: 600;
+  color: $color-accent;
+  margin-bottom: 8rpx;
+}
+
+.riskBoxDesc {
+  font-size: 24rpx;
+  color: $color-text-secondary;
+  line-height: 1.6;
+}
+
+.riskTipList {
+  margin-top: 12rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.riskTipItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 8rpx;
+  font-size: 24rpx;
+  color: $color-text-secondary;
+  line-height: 1.5;
 }
 
 .primaryBtnDisabled {

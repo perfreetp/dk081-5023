@@ -3,6 +3,7 @@ import { GameAccount, Order, User, Review, GameAccount as AccountType } from '@/
 import { mockAccounts, getAccountById } from '@/data/accounts';
 import { mockOrders, getOrderById } from '@/data/orders';
 import { mockUsers, currentUser, getUserById } from '@/data/users';
+import { mockReviews, getReviewsBySeller } from '@/data/reviews';
 
 interface AppState {
   accounts: GameAccount[];
@@ -16,6 +17,8 @@ interface AppState {
   getAccounts: () => GameAccount[];
   getAccountsFiltered: () => GameAccount[];
   getAccount: (id: string) => GameAccount | undefined;
+  updateAccountPrice: (accountId: string, newPrice: number) => void;
+  toggleAccountStatus: (accountId: string) => void;
 
   addOrder: (order: Order) => void;
   getOrders: () => Order[];
@@ -38,7 +41,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   users: [...mockUsers],
   currentUser: { ...currentUser },
   blacklist: new Set<string>(),
-  reviews: [],
+  reviews: [...mockReviews],
 
   addAccount: (input) => {
     const seller = get().currentUser;
@@ -89,12 +92,28 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   getAccountsFiltered: () => {
     const { accounts, blacklist } = get();
-    return accounts.filter(a => !blacklist.has(a.sellerId));
+    return accounts.filter(a => !blacklist.has(a.sellerId) && a.status === 'on_sale');
   },
 
   getAccount: (id) => {
     const fromStore = get().accounts.find(a => a.id === id);
     return fromStore || getAccountById(id);
+  },
+
+  updateAccountPrice: (accountId, newPrice) => {
+    set(s => ({
+      accounts: s.accounts.map(a => a.id === accountId ? { ...a, price: newPrice } : a)
+    }));
+  },
+
+  toggleAccountStatus: (accountId) => {
+    set(s => ({
+      accounts: s.accounts.map(a => {
+        if (a.id !== accountId || a.sellerId !== s.currentUser.id) return a;
+        const newStatus: GameAccount['status'] = a.status === 'on_sale' ? 'offline' : 'on_sale';
+        return { ...a, status: newStatus };
+      })
+    }));
   },
 
   addOrder: (order) => set(s => ({ orders: [order, ...s.orders] })),
@@ -145,7 +164,9 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
 
   getReviewsByUser: (userId) => {
-    return get().reviews.filter(r => r.revieweeId === userId);
+    const fromStore = get().reviews.filter(r => r.revieweeId === userId);
+    if (fromStore.length > 0) return fromStore;
+    return getReviewsBySeller(userId);
   },
 
   addToBlacklist: (userId) => {
@@ -170,25 +191,32 @@ export const useAppStore = create<AppState>((set, get) => ({
     set(s => {
       let updatedSeller: User | null = null;
 
+      const calcUpdatedUser = (u: User): User => {
+        const newScore = Math.max(0, Math.min(100, u.creditScore + ratingDelta));
+        const newLevel = newScore >= 90 ? 'excellent' : newScore >= 75 ? 'good' : newScore >= 60 ? 'normal' : 'poor';
+        const newTotal = u.totalDeals + 1;
+        const isGoodRating = ratingDelta >= 0;
+
+        const prevGoodCount = Math.round((u.goodRate / 100) * u.totalDeals);
+        const newGoodCount = isGoodRating ? prevGoodCount + 1 : prevGoodCount;
+        const newGoodRate = Math.min(100, Math.max(0, Math.round((newGoodCount / newTotal) * 100)));
+        const newSuccessRate = Math.min(100, Math.max(0, Math.round((newGoodCount / newTotal) * 1000) / 10));
+
+        return {
+          ...u,
+          creditScore: newScore,
+          creditLevel: newLevel,
+          totalDeals: newTotal,
+          totalSales: newTotal,
+          successRate: newSuccessRate,
+          goodRate: newGoodRate,
+          reviewCount: (u.reviewCount || 0) + 1,
+        };
+      };
+
       const updatedUsers = s.users.map(u => {
         if (u.id === userId && u.id !== s.currentUser.id) {
-          const newScore = Math.max(0, Math.min(100, u.creditScore + ratingDelta));
-          const newLevel = newScore >= 90 ? 'excellent' : newScore >= 75 ? 'good' : newScore >= 60 ? 'normal' : 'poor';
-          const newTotal = u.totalDeals + 1;
-          const newGood = ratingDelta >= 0 
-            ? (u.goodRate * u.totalDeals + 1) / newTotal 
-            : (u.goodRate * u.totalDeals) / newTotal;
-          const cappedGood = Math.max(0, Math.min(1, newGood));
-          updatedSeller = {
-            ...u,
-            creditScore: newScore,
-            creditLevel: newLevel,
-            totalDeals: newTotal,
-            totalSales: newTotal,
-            successRate: cappedGood,
-            goodRate: cappedGood,
-            reviewCount: (u.reviewCount || 0) + 1,
-          };
+          updatedSeller = calcUpdatedUser(u);
           return updatedSeller;
         }
         return u;
@@ -196,23 +224,7 @@ export const useAppStore = create<AppState>((set, get) => ({
 
       let newCurrentUser = s.currentUser;
       if (userId === s.currentUser.id) {
-        const newScore = Math.max(0, Math.min(100, s.currentUser.creditScore + ratingDelta));
-        const newLevel = newScore >= 90 ? 'excellent' : newScore >= 75 ? 'good' : newScore >= 60 ? 'normal' : 'poor';
-        const newTotal = s.currentUser.totalDeals + 1;
-        const newGood = ratingDelta >= 0 
-          ? (s.currentUser.goodRate * s.currentUser.totalDeals + 1) / newTotal 
-          : (s.currentUser.goodRate * s.currentUser.totalDeals) / newTotal;
-        const cappedGood = Math.max(0, Math.min(1, newGood));
-        newCurrentUser = {
-          ...s.currentUser,
-          creditScore: newScore,
-          creditLevel: newLevel,
-          totalDeals: newTotal,
-          totalSales: newTotal,
-          successRate: cappedGood,
-          goodRate: cappedGood,
-          reviewCount: (s.currentUser.reviewCount || 0) + 1,
-        };
+        newCurrentUser = calcUpdatedUser(s.currentUser);
         updatedSeller = newCurrentUser;
       }
 

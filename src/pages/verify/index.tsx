@@ -265,6 +265,38 @@ export default function VerifyPage() {
         </View>
       </View>
 
+      {account && (
+        <View className={styles.accountInfoCard}>
+          <View className={styles.accountInfoHeader}>
+            <Image className={styles.accountCover} src={account.coverImage} mode='aspectFill' />
+            <View className={styles.accountInfoMain}>
+              <Text className={styles.accountTitle}>{account.title}</Text>
+              <View className={styles.accountMetaRow}>
+                <Text className={`${styles.accountMetaTag} ${styles.accountGameTag}`}>{account.gameName}</Text>
+                <Text className={styles.accountMetaTag}>区服：{account.server || account.serverName}</Text>
+                <Text className={styles.accountMetaTag}>段位：{account.rank}</Text>
+              </View>
+              <View className={styles.accountPriceRow} style={{ marginTop: 12 }}>
+                <Text className={styles.accountCurrentPrice}>
+                  <small>¥</small>{account.price.toLocaleString()}
+                </Text>
+                {account.originalPrice && (
+                  <Text style={{ fontSize: 24, color: '#94A3B8', textDecoration: 'line-through' }}>
+                    ¥{account.originalPrice.toLocaleString()}
+                  </Text>
+                )}
+                <Text style={{ fontSize: 22, color: account.negotiable ? '#F97316' : '#10B981', marginLeft: 8 }}>
+                  {account.negotiable ? '可议价' : '一口价'}
+                </Text>
+              </View>
+            </View>
+          </View>
+          <View style={{ fontSize: 24, color: '#64748B', lineHeight: 1.6 }}>
+            {account.description || '卖家未填写详细描述'}
+          </View>
+        </View>
+      )}
+
       <View className={styles.stepsNav}>
         {stepNavs.map((nav) => (
           <View
@@ -507,7 +539,7 @@ export default function VerifyPage() {
                   <Text>需要注意的差异项</Text>
                 </View>
                 <Text className={styles.warningDesc}>
-                  {verifyReport.items.filter(i => i.warning).map(i => i.note).join('；')}
+                  {verifyReport.items.filter(i => i.warning).map(i => i.note || i.name).join('；')}
                   {"\n"}以上为系统提示，不影响账号正常使用，请知悉
                 </Text>
               </View>
@@ -515,9 +547,9 @@ export default function VerifyPage() {
           )}
 
           <View className={styles.reportSection}>
-            <View className={styles.reportSectionTitle}>详细核验结果</View>
+            <View className={styles.reportSectionTitle}>详细核验结果（共 {verifyReport.items.length} 项）</View>
             <View className={styles.reportCheckList}>
-              {verifyReport.items.slice(0, 10).map((item, i) => (
+              {verifyReport.items.map((item, i) => (
                 <View key={i} className={styles.reportCheckItem}>
                   <View className={styles.reportCheckLeft}>
                     <Text>{item.passed ? '✅' : item.warning ? '⚠️' : '❌'}</Text>
@@ -525,9 +557,48 @@ export default function VerifyPage() {
                   </View>
                   <Text className={`${styles.reportCheckRight} ${item.warning ? 'warn' : ''}`}>
                     {item.value}
+                    {item.note ? ` · ${item.note}` : ''}
                   </Text>
                 </View>
               ))}
+            </View>
+          </View>
+
+          <View className={styles.screenshotTrace}>
+            <View className={styles.screenshotTraceTitle}>验号截图留痕</View>
+            <View className={styles.screenshotTraceGrid}>
+              {[...loginImages, ...basicImages, ...assetsImages, ...(account?.images || []).slice(0, 3)].slice(0, 9).map((img, i) => (
+                <View key={i} className={styles.screenshotTraceItem}>
+                  <Image className={styles.screenshotTraceImg} src={img} mode='aspectFill' />
+                  <View className={styles.screenshotTraceLabel}>
+                    {i < loginImages.length ? `登录${i + 1}` : i < loginImages.length + basicImages.length ? '信息' : i < loginImages.length + basicImages.length + assetsImages.length ? `资产${i - loginImages.length - basicImages.length + 1}` : `账号${i - loginImages.length - basicImages.length - assetsImages.length + 1}`}
+                  </View>
+                </View>
+              ))}
+            </View>
+          </View>
+
+          <View className={styles.riskBox}>
+            <View className={styles.riskBoxTitle}>
+              <Text>🔔</Text>
+              <Text>售后风险提示</Text>
+            </View>
+            <Text className={styles.riskBoxDesc}>
+              本账号已通过平台验号，在 <strong style={{ color: '#F97316' }}>{account?.protectionDays || 15} 天</strong> 保障期内如出现找回、封禁、封禁等问题，可申请平台介入全额退款。
+            </Text>
+            <View className={styles.riskTipList}>
+              <View className={styles.riskTipItem}>
+                <Text>💡</Text>
+                <Text>请在平台内完成全部换绑操作，不要通过QQ/微信私下交易</Text>
+              </View>
+              <View className={styles.riskTipItem}>
+                <Text>💡</Text>
+                <Text>换绑完成后请及时修改密码、更换绑定手机和邮箱</Text>
+              </View>
+              <View className={styles.riskTipItem}>
+                <Text>💡</Text>
+                <Text>保留所有交易聊天记录和验号截图，出现纠纷可作为凭证</Text>
+              </View>
             </View>
           </View>
         </View>

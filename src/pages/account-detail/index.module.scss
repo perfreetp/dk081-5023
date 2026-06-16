@@ -449,3 +449,155 @@
   color: #fff;
   box-shadow: $shadow-md;
 }
+
+.creditProfileGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16rpx;
+  margin-bottom: $spacing-lg;
+}
+
+.creditProfileItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: $spacing-md 8rpx;
+  background: $color-bg-gray;
+  border-radius: $radius-md;
+}
+
+.creditProfileValue {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: $color-primary;
+  line-height: 1.2;
+}
+
+.creditProfileLabel {
+  font-size: 22rpx;
+  color: $color-text-tertiary;
+  margin-top: 4rpx;
+}
+
+.creditScoreBar {
+  margin-bottom: $spacing-lg;
+}
+
+.creditScoreLabelRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12rpx;
+}
+
+.creditScoreLabelRow span:first-child {
+  font-size: 24rpx;
+  color: $color-text-secondary;
+}
+
+.creditScoreLabelRow span:last-child {
+  font-size: 24rpx;
+  color: $color-primary;
+  font-weight: 600;
+}
+
+.creditScoreTrack {
+  height: 12rpx;
+  background: $color-bg-gray;
+  border-radius: 999rpx;
+  overflow: hidden;
+}
+
+.creditScoreFill {
+  height: 100%;
+  background: linear-gradient(90deg, $color-primary 0%, #34D399 100%);
+  border-radius: 999rpx;
+  transition: width 0.3s ease;
+}
+
+.reviewList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.reviewItem {
+  padding: $spacing-md 0;
+  border-bottom: 1rpx solid $color-border-light;
+}
+
+.reviewItem:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.reviewHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12rpx;
+}
+
+.reviewUser {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.reviewAvatar {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+}
+
+.reviewUserName {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: $color-text-primary;
+}
+
+.reviewRating {
+  font-size: 26rpx;
+}
+
+.reviewRating.good { color: $color-primary; }
+.reviewRating.neutral { color: #F59E0B; }
+.reviewRating.bad { color: $color-error; }
+
+.reviewContent {
+  font-size: 26rpx;
+  color: $color-text-secondary;
+  line-height: 1.6;
+  margin-bottom: 12rpx;
+}
+
+.reviewTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8rpx;
+  margin-bottom: 8rpx;
+}
+
+.reviewTag {
+  padding: 4rpx 12rpx;
+  background: $color-primary-bg;
+  color: $color-primary;
+  border-radius: $radius-sm;
+  font-size: 20rpx;
+}
+
+.reviewTime {
+  font-size: 22rpx;
+  color: $color-text-tertiary;
+}
+
+.emptyReviews {
+  padding: $spacing-xl 0;
+  text-align: center;
+  color: $color-text-tertiary;
+  font-size: 26rpx;
+}

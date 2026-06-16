@@ -5,11 +5,25 @@ import styles from './index.module.scss'
 import { creditLevelInfo } from '../../data/users'
 import { formatPrice, maskPhone } from '../../utils/format'
 import { useAppStore } from '@/stores'
+import type { Review } from '@/types'
+
+const renderRatingStars = (rating: number) => {
+  const full = Math.floor(rating)
+  let cls = 'good'
+  if (rating <= 2) cls = 'bad'
+  else if (rating === 3) cls = 'neutral'
+  return (
+    <Text className={`${styles.reviewRating} ${styles[cls]}`}>
+      {'★'.repeat(full)}{'☆'.repeat(5 - full)} {rating}.0
+    </Text>
+  )
+}
 
 export default function AccountDetail() {
   const router = useRouter()
   const accountId = router.params.id || 'a1'
   const getAccount = useAppStore(s => s.getAccount)
+  const getReviewsByUser = useAppStore(s => s.getReviewsByUser)
   const isBlacklisted = useAppStore(s => s.isBlacklisted)
   const addToBlacklist = useAppStore(s => s.addToBlacklist)
 
@@ -22,6 +36,14 @@ export default function AccountDetail() {
   }, [account])
 
   const creditInfo = creditLevelInfo[seller.creditLevel]
+
+  const sellerReviews = useMemo<Review[]>(() => {
+    return getReviewsByUser(seller.id).slice(0, 3)
+  }, [seller.id, getReviewsByUser])
+
+  const reviewCount = useMemo(() => {
+    return seller.reviewCount || 0
+  }, [seller.reviewCount])
 
   const guaranteeItems = [
     { icon: '🔒', title: '资金担保', desc: '验号通过再放款' },
@@ -52,7 +74,7 @@ export default function AccountDetail() {
   }
 
   const handleViewVerifyReport = () => {
-    Taro.navigateTo({ url: '/pages/verify/index?mock=1' })
+    Taro.navigateTo({ url: `/pages/verify/index?mock=1&accountId=${account.id}` })
   }
 
   const handleAppeal = () => {
@@ -161,6 +183,63 @@ export default function AccountDetail() {
               <View className={styles.sellerStat}>入驻 <strong>{seller.daysActive}天</strong></View>
             </View>
           </View>
+        </View>
+      </View>
+
+      <View className={styles.section}>
+        <View className={styles.sectionTitle}>
+          <Text className={styles.sectionTitleText}>📊 卖家信用档案</Text>
+        </View>
+        <View className={styles.creditProfileGrid}>
+          <View className={styles.creditProfileItem}>
+            <Text className={styles.creditProfileValue}>{seller.creditScore}</Text>
+            <Text className={styles.creditProfileLabel}>信用分</Text>
+          </View>
+          <View className={styles.creditProfileItem}>
+            <Text className={styles.creditProfileValue}>{seller.goodRate}%</Text>
+            <Text className={styles.creditProfileLabel}>好评率</Text>
+          </View>
+          <View className={styles.creditProfileItem}>
+            <Text className={styles.creditProfileValue}>{seller.totalDeals}</Text>
+            <Text className={styles.creditProfileLabel}>成交数</Text>
+          </View>
+          <View className={styles.creditProfileItem}>
+            <Text className={styles.creditProfileValue}>{reviewCount}</Text>
+            <Text className={styles.creditProfileLabel}>评价数</Text>
+          </View>
+        </View>
+        <View className={styles.creditScoreBar}>
+          <View className={styles.creditScoreLabelRow}>
+            <Text>信用水平</Text>
+            <Text>{creditInfo.label}</Text>
+          </View>
+          <View className={styles.creditScoreTrack}>
+            <View className={styles.creditScoreFill} style={{ width: `${seller.creditScore}%` }} />
+          </View>
+        </View>
+        <View className={styles.reviewList}>
+          {sellerReviews.length > 0 ? sellerReviews.map((r) => (
+            <View key={r.id} className={styles.reviewItem}>
+              <View className={styles.reviewHeader}>
+                <View className={styles.reviewUser}>
+                  <View className={styles.reviewAvatar}>{r.reviewer.avatarEmoji}</View>
+                  <Text className={styles.reviewUserName}>{r.isAnonymous ? '匿名买家' : r.reviewer.nickname}</Text>
+                </View>
+                {renderRatingStars(r.rating)}
+              </View>
+              {r.tags && r.tags.length > 0 && (
+                <View className={styles.reviewTags}>
+                  {r.tags.map((t, i) => (
+                    <Text key={i} className={styles.reviewTag}>{t}</Text>
+                  ))}
+                </View>
+              )}
+              <Text className={styles.reviewContent}>{r.content}</Text>
+              <Text className={styles.reviewTime}>{r.createTime}</Text>
+            </View>
+          )) : (
+            <View className={styles.emptyReviews}>暂无评价记录</View>
+          )}
         </View>
       </View>
 

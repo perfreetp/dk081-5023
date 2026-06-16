@@ -28,7 +28,10 @@ const createTagsFromNames = (names: string[]): AccountTag[] => {
 
 const PublishPage: React.FC = () => {
   const currentUser = useAppStore(s => s.currentUser)
+  const accounts = useAppStore(s => s.accounts)
   const addAccount = useAppStore(s => s.addAccount)
+  const updateAccountPrice = useAppStore(s => s.updateAccountPrice)
+  const toggleAccountStatus = useAppStore(s => s.toggleAccountStatus)
   const [selectedGame, setSelectedGame] = useState<string | null>(null);
   const [selectedServer, setSelectedServer] = useState<string | null>(null);
   const [title, setTitle] = useState('');
@@ -60,6 +63,50 @@ const PublishPage: React.FC = () => {
   }, [price]);
 
   const canSubmit = selectedGame && selectedServer && title && price && agreed && images.length > 0;
+
+  const myPublishedAccounts = useMemo(() => {
+    return accounts.filter(a => a.sellerId === currentUser.id);
+  }, [accounts, currentUser.id]);
+
+  const handleToggleStatus = (accountId: string, currentStatus: string) => {
+    Taro.showModal({
+      title: currentStatus === 'on_sale' ? '确认下架' : '确认上架',
+      content: currentStatus === 'on_sale' ? '下架后将不在首页展示，可随时重新上架' : '上架后将在首页展示，买家可直接下单购买',
+      confirmText: currentStatus === 'on_sale' ? '确认下架' : '确认上架',
+      confirmColor: currentStatus === 'on_sale' ? '#EF4444' : '#10B981',
+      success: (res) => {
+        if (res.confirm) {
+          toggleAccountStatus(accountId);
+          Taro.showToast({ title: currentStatus === 'on_sale' ? '已下架' : '已上架', icon: 'success' });
+        }
+      }
+    });
+  };
+
+  const handleChangePrice = (accountId: string, currentPrice: number) => {
+    Taro.showModal({
+      title: '修改售价',
+      editable: true,
+      placeholderText: `当前售价：¥${currentPrice}，请输入新价格`,
+      confirmText: '确认修改',
+      confirmColor: '#10B981',
+      success: (res) => {
+        if (res.confirm && res.content) {
+          const newPrice = parseFloat(res.content);
+          if (isNaN(newPrice) || newPrice <= 0) {
+            Taro.showToast({ title: '请输入有效价格', icon: 'none' });
+            return;
+          }
+          updateAccountPrice(accountId, newPrice);
+          Taro.showToast({ title: '价格已更新', icon: 'success' });
+        }
+      }
+    });
+  };
+
+  const handleViewDetail = (accountId: string) => {
+    Taro.navigateTo({ url: `/pages/account-detail/index?id=${accountId}` });
+  };
 
   const toggleTag = (tag: string) => {
     setSelectedTags(prev =>
@@ -181,6 +228,61 @@ const PublishPage: React.FC = () => {
   return (
     <ScrollView scrollY className={styles.page}>
       <View className={styles.content}>
+        <View className={styles.myPublishSection}>
+          <View className={styles.myPublishHeader}>
+            <View className={styles.myPublishTitle}>
+              <Text>📦</Text>
+              <Text>我的发布</Text>
+            </View>
+            <Text className={styles.myPublishCount}>共 {myPublishedAccounts.length} 个账号</Text>
+          </View>
+          {myPublishedAccounts.length > 0 ? (
+            <View className={styles.myPublishList}>
+              {myPublishedAccounts.map((a) => (
+                <View key={a.id} className={styles.myPublishItem}>
+                  <View className={styles.myPublishItemHeader} onClick={() => handleViewDetail(a.id)}>
+                    <Image className={styles.myPublishCover} src={a.coverImage} mode='aspectFill' />
+                    <View className={styles.myPublishInfo}>
+                      <Text className={styles.myPublishItemTitle}>{a.title}</Text>
+                      <View className={styles.myPublishMeta}>
+                        <Text className={styles.myPublishMetaTag}>{a.gameName}</Text>
+                        <Text className={styles.myPublishMetaTag}>{a.serverName || a.server}</Text>
+                        <Text className={styles.myPublishMetaTag}>{a.rank}</Text>
+                      </View>
+                      <View className={styles.myPublishPriceRow}>
+                        <Text className={styles.myPublishPrice}>¥{a.price.toLocaleString()}</Text>
+                        <View className={`${styles.myPublishStatus} ${a.status === 'on_sale' ? styles.statusOnSale : a.status === 'offline' ? styles.statusOffline : styles.statusSold}`}>
+                          {a.status === 'on_sale' ? '在售中' : a.status === 'offline' ? '已下架' : a.status === 'sold' ? '已售出' : '审核中'}
+                        </View>
+                      </View>
+                    </View>
+                  </View>
+                  {a.status !== 'sold' && a.status !== 'pending' && (
+                    <View className={styles.myPublishActions}>
+                      <View
+                        className={`${styles.actionBtn} ${styles.actionBtnPrimary}`}
+                        onClick={() => handleChangePrice(a.id, a.price)}
+                      >
+                        <Text>改价格</Text>
+                      </View>
+                      <View
+                        className={`${styles.actionBtn} ${a.status === 'on_sale' ? styles.actionBtnDanger : styles.actionBtnSecondary}`}
+                        onClick={() => handleToggleStatus(a.id, a.status)}
+                      >
+                        <Text>{a.status === 'on_sale' ? '下架' : '重新上架'}</Text>
+                      </View>
+                    </View>
+                  )}
+                </View>
+              ))}
+            </View>
+          ) : (
+            <View className={styles.emptyPublish}>
+              <Text>暂无发布的账号，填写下方信息即可发布</Text>
+            </View>
+          )}
+        </View>
+
         <View className={styles.noticeCard}>
           <View className={styles.noticeTitle}>
             <Text>🛡️</Text>
