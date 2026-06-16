@@ -19,6 +19,9 @@ export default function OrderDetail() {
   const router = useRouter()
   const orderId = router.params.id || 'o1'
   const getOrder = useAppStore(s => s.getOrder)
+  const getReviewsByOrder = useAppStore(s => s.getReviewsByOrder)
+  const hasReviewedOrder = useAppStore(s => s.hasReviewedOrder)
+  const currentUser = useAppStore(s => s.currentUser)
 
   const [countdownSecs, setCountdownSecs] = useState(0)
 
@@ -29,6 +32,94 @@ export default function OrderDetail() {
   const account = useMemo(() => order.account, [order])
   const buyer = useMemo(() => order.buyer, [order])
   const seller = useMemo(() => order.seller, [order])
+
+  const orderReviews = useMemo(() => getReviewsByOrder(order.id), [order.id, getReviewsByOrder])
+  const orderReview = orderReviews[0]
+  const isBuyer = currentUser.id === buyer.id
+  const canReviewNow = isBuyer && (order.status === 'completed' || order.currentStepKey === 'binding' || order.currentStepKey === 'verify_done') && !hasReviewedOrder(order.id)
+
+  const handleGoReview = () => {
+    Taro.navigateTo({ url: `/pages/review/index?orderId=${order.id}` })
+  }
+
+  const timeline = useMemo(() => {
+    const list: {
+      key: string;
+      icon: string;
+      title: string;
+      desc: string;
+      time?: string;
+      operator?: string;
+      status: 'done' | 'current' | 'pending';
+      action?: { label: string; onClick: () => void };
+      highlight?: boolean;
+    }[] = [];
+
+    const currentKey = order.currentStepKey;
+    const stepOrder: { key: string; title: string; desc: string; icon: string }[] = [
+      { key: 'pending_payment', title: '买家下单', desc: `${buyer.nickname} 提交订单并冻结担保资金`, icon: '📝' },
+      { key: 'pending_verify', title: '买家付款完成', desc: '资金已进入平台担保账户，等待验号', icon: '💳' },
+      { key: 'verifying', title: '平台验号中', desc: '平台验号师核对账号信息', icon: '🔍' },
+      { key: 'verify_done', title: '验号报告出具', desc: '验号完成，报告已生成，等待买家确认', icon: '✅' },
+      { key: 'pending_binding', title: '开始协助换绑', desc: '卖家配合平台进行账号信息交接', icon: '🔄' },
+      { key: 'binding', title: '换绑确认中', desc: '买家确认换绑完成并登录验证', icon: '🔐' },
+      { key: 'completed', title: '交易完成', desc: '平台放款给卖家，售后保障期开始', icon: '🎉' },
+    ];
+
+    const keyToIdx: Record<string, number> = {};
+    stepOrder.forEach((s, i) => { keyToIdx[s.key] = i; });
+    const currentIdx = keyToIdx[currentKey] ?? 0;
+
+    const timeMap: Record<string, string | undefined> = {
+      pending_payment: order.createdAt,
+      pending_verify: order.payTime,
+      verifying: order.verifyStartTime,
+      verify_done: order.verifyEndTime,
+      completed: order.completeTime,
+    };
+
+    const operatorMap: Record<string, string | undefined> = {
+      pending_payment: `买家 ${buyer.nickname}`,
+      pending_verify: '平台系统',
+      verifying: '平台验号师',
+      verify_done: '平台验号师',
+      pending_binding: `卖家 ${seller.nickname}`,
+      binding: `买家 ${buyer.nickname}`,
+      completed: '平台系统',
+    };
+
+    stepOrder.forEach((step, i) => {
+      let status: 'done' | 'current' | 'pending';
+      if (i < currentIdx) status = 'done';
+      else if (i === currentIdx) status = 'current';
+      else status = 'pending';
+
+      let action: { label: string; onClick: () => void } | undefined;
+      if (step.key === 'verifying' || step.key === 'verify_done') {
+        action = { label: '查看报告', onClick: handleVerify };
+      }
+      if (step.key === 'completed' && order.status === 'completed') {
+        const reviewForOrder = useAppStore.getState().getReviewsByOrder(order.id);
+        if (reviewForOrder.length > 0) {
+          action = { label: '查看评价', onClick: () => Taro.pageScrollTo({ scrollTop: 1000, duration: 300 }) };
+        }
+      }
+
+      list.push({
+        key: step.key,
+        icon: step.icon,
+        title: step.title,
+        desc: step.desc,
+        time: timeMap[step.key],
+        operator: operatorMap[step.key],
+        status,
+        action,
+        highlight: step.key === 'verify_done',
+      });
+    });
+
+    return list;
+  }, [order, buyer.nickname, seller.nickname]);
 
   useEffect(() => {
     if (order.countdownSeconds > 0) {
@@ -133,6 +224,63 @@ export default function OrderDetail() {
         </View>
       </View>
 
+      <View className={`${styles.section} ${styles.timelineSection}`}>
+        <View className={styles.sectionTitle}>
+          <Text className={styles.sectionTitleText}>📋 交易操作时间线</Text>
+          <Text className={styles.sectionSubtitle}>买卖双方共同可见 · 纠纷举证依据</Text>
+        </View>
+        <View className={styles.timelineList}>
+          {timeline.map((step, i) => (
+            <View
+              key={step.key}
+              className={`${styles.timelineItem} ${
+                step.status === 'done'
+                  ? styles.timelineDone
+                  : step.status === 'current'
+                  ? styles.timelineCurrent
+                  : styles.timelinePending
+              } ${step.highlight && step.status !== 'pending' ? styles.timelineHighlight : ''}`}
+            >
+              <View className={styles.timelineLeft}>
+                <View className={styles.timelineDot}>
+                  <Text>{step.icon}</Text>
+                </View>
+                {i < timeline.length - 1 && (
+                  <View className={`${styles.timelineLine} ${
+                    step.status === 'done' ? styles.timelineLineDone : styles.timelineLinePending
+                  }`} />
+                )}
+              </View>
+              <View className={styles.timelineRight}>
+                <View className={styles.timelineTitleRow}>
+                  <Text className={styles.timelineTitle}>{step.title}</Text>
+                  {step.status === 'current' && (
+                    <View className={styles.timelineBadgeCurrent}>处理中</View>
+                  )}
+                  {step.status === 'done' && (
+                    <View className={styles.timelineBadgeDone}>已完成</View>
+                  )}
+                </View>
+                <Text className={styles.timelineDesc}>{step.desc}</Text>
+                {step.operator && (
+                  <View className={styles.timelineMeta}>
+                    <Text className={styles.timelineOperator}>操作人：{step.operator}</Text>
+                    {step.time && (
+                      <Text className={styles.timelineTime}>{step.time}</Text>
+                    )}
+                  </View>
+                )}
+                {step.action && (
+                  <View className={styles.timelineAction} onClick={step.action.onClick}>
+                    <Text>{step.action.label} →</Text>
+                  </View>
+                )}
+              </View>
+            </View>
+          ))}
+        </View>
+      </View>
+
       <View className={styles.section}>
         <View className={styles.sectionTitle}>
           <Text className={styles.sectionTitleText}>🎮 账号信息</Text>
@@ -221,6 +369,105 @@ export default function OrderDetail() {
           </View>
         </View>
       )}
+
+      <View className={styles.section}>
+        <View className={styles.sectionTitle}>
+          <Text className={styles.sectionTitleText}>💬 交易评价</Text>
+          {!orderReview && canReviewNow && (
+            <Text className={styles.sectionAction} onClick={handleGoReview}>去评价 →</Text>
+          )}
+          {orderReview && (
+            <Text className={styles.sectionSubtitle}>双方互评后展示</Text>
+          )}
+        </View>
+
+        {orderReview ? (
+          <View className={styles.reviewCard}>
+            <View className={styles.reviewHeader}>
+              <Image
+                className={styles.reviewAvatar}
+                src={orderReview.reviewer.avatar}
+                mode='aspectFill'
+              />
+              <View className={styles.reviewUser}>
+                <Text className={styles.reviewNickname}>{orderReview.reviewer.nickname}</Text>
+                <View className={styles.reviewRatingRow}>
+                  <Text className={`${styles.reviewRating} ${
+                    orderReview.rating >= 4 ? styles.ratingGood : orderReview.rating === 3 ? styles.ratingNeutral : styles.ratingBad
+                  }`}>
+                    {'★'.repeat(orderReview.rating)}{'☆'.repeat(5 - orderReview.rating)} {orderReview.rating}.0
+                  </Text>
+                  <Text className={styles.reviewTime}>{orderReview.createTime}</Text>
+                </View>
+              </View>
+            </View>
+            {orderReview.tags && orderReview.tags.length > 0 && (
+              <View className={styles.reviewTags}>
+                {orderReview.tags.map((tag, i) => (
+                  <View
+                    key={i}
+                    className={`${styles.reviewTag} ${
+                      orderReview.rating >= 3 ? styles.reviewTagGood : styles.reviewTagBad
+                    }`}
+                  >
+                    <Text>{tag}</Text>
+                  </View>
+                ))}
+              </View>
+            )}
+            {orderReview.content && (
+              <Text className={styles.reviewContent}>{orderReview.content}</Text>
+            )}
+            {orderReview.images && orderReview.images.length > 0 && (
+              <View className={styles.reviewImages}>
+                {orderReview.images.map((img, i) => (
+                  <Image
+                    key={i}
+                    className={styles.reviewImage}
+                    src={img}
+                    mode='aspectFill'
+                    onClick={() => Taro.previewImage({ urls: orderReview.images!, current: img })}
+                  />
+                ))}
+              </View>
+            )}
+            {orderReview.subRatings && (
+              <View className={styles.reviewSubRatings}>
+                {[
+                  { key: 'accurate', label: '描述相符' },
+                  { key: 'speed', label: '验号速度' },
+                  { key: 'attitude', label: '沟通态度' },
+                  { key: 'process', label: '换绑流程' },
+                ].map(item => (
+                  <View key={item.key} className={styles.subRatingItem}>
+                    <Text className={styles.subRatingLabel}>{item.label}</Text>
+                    <View className={styles.subRatingStars}>
+                      {'★'.repeat(orderReview.subRatings![item.key as keyof typeof orderReview.subRatings])}
+                      <Text className={styles.subRatingValue}>
+                        {orderReview.subRatings![item.key as keyof typeof orderReview.subRatings]}.0
+                      </Text>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            )}
+          </View>
+        ) : canReviewNow ? (
+          <View className={styles.reviewEmpty} onClick={handleGoReview}>
+            <View className={styles.reviewEmptyIcon}>⭐</View>
+            <Text className={styles.reviewEmptyTitle}>还未评价此订单</Text>
+            <Text className={styles.reviewEmptyDesc}>点击前往评价，您的评价将帮助其他买家判断</Text>
+            <View className={styles.reviewEmptyBtn}>立即评价 →</View>
+          </View>
+        ) : (
+          <View className={styles.reviewEmpty}>
+            <Text className={styles.reviewEmptyTitle}>暂未评价</Text>
+            <Text className={styles.reviewEmptyDesc}>
+              {isBuyer ? '完成换绑确认后即可对卖家进行评价' : '等待买家完成交易后作出评价'}
+            </Text>
+          </View>
+        )}
+      </View>
 
       {order.riskWarning && (
         <View className={`${styles.section} ${styles.riskCard}`}>

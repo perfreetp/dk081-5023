@@ -102,6 +102,8 @@ export interface GameAccount {
   status: 'on_sale' | 'pending' | 'sold' | 'offline';
   viewCount: number;
   favoriteCount: number;
+  chatCount?: number;
+  dealCount?: number;
   publishTime: string;
   publishedAt: string;
   verifyReport?: VerifyReport;

@@ -26,6 +26,7 @@ export default function AccountDetail() {
   const getReviewsByUser = useAppStore(s => s.getReviewsByUser)
   const isBlacklisted = useAppStore(s => s.isBlacklisted)
   const addToBlacklist = useAppStore(s => s.addToBlacklist)
+  const createOrder = useAppStore(s => s.createOrder)
 
   const account = useMemo(() => {
     return getAccount(accountId) || getAccount('a1')
@@ -64,9 +65,10 @@ export default function AccountDetail() {
       confirmColor: '#10B981',
       success: (res) => {
         if (res.confirm) {
+          const order = createOrder(account.id)
           Taro.showToast({ title: '下单成功', icon: 'success' })
           setTimeout(() => {
-            Taro.navigateTo({ url: '/pages/verify/index?mock=1' })
+            Taro.navigateTo({ url: `/pages/verify/index?orderId=${order.id}` })
           }, 800)
         }
       }

@@ -478,6 +478,60 @@
   color: $color-text-secondary;
 }
 
+.tabBar {
+  display: flex;
+  gap: 16rpx;
+  margin-bottom: $spacing-md;
+  padding: 8rpx;
+  background: $color-bg-gray;
+  border-radius: $radius-pill;
+}
+
+.tabItem {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  padding: 16rpx 12rpx;
+  border-radius: $radius-pill;
+  transition: all 0.2s ease;
+
+  &.tabItemActive {
+    background: $color-bg-card;
+    box-shadow: $shadow-sm;
+
+    .tabLabel {
+      color: $color-primary;
+      font-weight: $font-weight-semibold;
+    }
+
+    .tabBadge {
+      background: $color-primary-bg;
+      color: $color-primary;
+    }
+  }
+}
+
+.tabLabel {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.tabBadge {
+  min-width: 36rpx;
+  height: 36rpx;
+  padding: 0 10rpx;
+  background: rgba(156, 163, 175, 0.2);
+  color: $color-text-secondary;
+  border-radius: 18rpx;
+  font-size: 20rpx;
+  font-weight: $font-weight-semibold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .myPublishList {
   display: flex;
   flex-direction: column;
@@ -570,6 +624,47 @@
 .statusSold {
   background: rgba(59, 130, 246, 0.1);
   color: $color-secondary;
+}
+
+.statsRow {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8rpx;
+  padding: $spacing-sm 0;
+  margin-bottom: $spacing-sm;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.04) 0%, rgba(16, 185, 129, 0.04) 100%);
+  border-radius: $radius-md;
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4rpx;
+  padding: 8rpx 4rpx;
+}
+
+.statIcon {
+  font-size: 28rpx;
+}
+
+.statContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.statValue {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  line-height: 1.2;
+}
+
+.statLabel {
+  font-size: 18rpx;
+  color: $color-text-tertiary;
+  line-height: 1.2;
 }
 
 .myPublishActions {

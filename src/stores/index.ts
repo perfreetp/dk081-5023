@@ -1,7 +1,7 @@
 import { create } from 'zustand';
-import { GameAccount, Order, User, Review, GameAccount as AccountType } from '@/types';
+import { GameAccount, Order, User, Review, GameAccount as AccountType, OrderStatus } from '@/types';
 import { mockAccounts, getAccountById } from '@/data/accounts';
-import { mockOrders, getOrderById } from '@/data/orders';
+import { mockOrders, getOrderById, buildOrder } from '@/data/orders';
 import { mockUsers, currentUser, getUserById } from '@/data/users';
 import { mockReviews, getReviewsBySeller } from '@/data/reviews';
 
@@ -13,7 +13,7 @@ interface AppState {
   blacklist: Set<string>;
   reviews: Review[];
 
-  addAccount: (account: Omit<GameAccount, 'id' | 'seller' | 'status' | 'viewCount' | 'favoriteCount' | 'publishTime' | 'publishedAt' | 'server' | 'negotiable' | 'canRefund' | 'protectionDays'> & Partial<GameAccount>) => GameAccount;
+  addAccount: (account: Omit<GameAccount, 'id' | 'seller' | 'status' | 'viewCount' | 'favoriteCount' | 'chatCount' | 'dealCount' | 'publishTime' | 'publishedAt' | 'server' | 'negotiable' | 'canRefund' | 'protectionDays'> & Partial<GameAccount>) => GameAccount;
   getAccounts: () => GameAccount[];
   getAccountsFiltered: () => GameAccount[];
   getAccount: (id: string) => GameAccount | undefined;
@@ -21,11 +21,15 @@ interface AppState {
   toggleAccountStatus: (accountId: string) => void;
 
   addOrder: (order: Order) => void;
+  createOrder: (accountId: string, negotiatedPrice?: number) => Order;
   getOrders: () => Order[];
   getOrder: (id: string) => Order | undefined;
   getOrdersByUser: (userId: string, role?: 'buyer' | 'seller' | 'all') => Order[];
+  updateOrderStatus: (orderId: string, newStatus: OrderStatus) => void;
 
-  addReview: (review: Omit<Review, 'id' | 'createTime' | 'reviewer'> & Partial<Review>) => Review;
+  addReview: (review: Omit<Review, 'id' | 'createTime' | 'reviewer'> & Partial<Review>) => Review | null;
+  hasReviewedOrder: (orderId: string) => boolean;
+  getReviewsByOrder: (orderId: string) => Review[];
   getReviewsByUser: (userId: string) => Review[];
 
   addToBlacklist: (userId: string, reason?: string) => void;
@@ -77,6 +81,8 @@ export const useAppStore = create<AppState>((set, get) => ({
       status: 'on_sale',
       viewCount: 0,
       favoriteCount: 0,
+      chatCount: 0,
+      dealCount: 0,
       publishTime: timeStr,
       publishedAt: timeStr,
       canRefund: input.canRefund ?? true,
@@ -118,6 +124,80 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   addOrder: (order) => set(s => ({ orders: [order, ...s.orders] })),
 
+  createOrder: (accountId, negotiatedPrice) => {
+    const account = get().getAccount(accountId);
+    if (!account) throw new Error('账号不存在');
+
+    const seller = account.seller;
+    const buyer = get().currentUser;
+    const price = negotiatedPrice ?? account.price;
+    const now = new Date();
+    const pad = (n: number) => String(n).padStart(2, '0');
+    const timeStr = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+    const orderId = `o_${Date.now()}`;
+    const orderNo = `GX${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}${String(Math.floor(Math.random() * 90000) + 10000)}`;
+    const deadline = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+    const deadlineStr = `${deadline.getFullYear()}-${pad(deadline.getMonth() + 1)}-${pad(deadline.getDate())} ${pad(deadline.getHours())}:${pad(deadline.getMinutes())}:${pad(deadline.getSeconds())}`;
+
+    const newOrder = buildOrder({
+      id: orderId,
+      orderNo,
+      accountId,
+      buyerId: buyer.id,
+      sellerId: seller.id,
+      finalPrice: price,
+      status: 'verifying',
+      createTime: timeStr,
+      payTime: timeStr,
+      verifyStartTime: timeStr,
+      deadlineTime: deadlineStr,
+      countdownSeconds: 24 * 60 * 60,
+      isNegotiated: !!negotiatedPrice,
+      negotiatedPrice,
+      bindingProgress: 0,
+      verifyRecordCount: 6,
+      protectionDays: account.protectionDays || 15,
+    });
+
+    // 重新覆盖 account 字段，确保用的是当前账号实时数据
+    const finalOrder: Order = {
+      ...newOrder,
+      account,
+      buyer,
+      seller,
+      finalPrice: price,
+      price,
+    };
+
+    set(s => ({ orders: [finalOrder, ...s.orders] }));
+    return finalOrder;
+  },
+
+  updateOrderStatus: (orderId, newStatus) => {
+    set(s => ({
+      orders: s.orders.map(o => {
+        if (o.id !== orderId) return o;
+        const stepOrder: OrderStatus[] = [
+          'pending_payment', 'pending_verify', 'verifying', 'verify_done',
+          'pending_binding', 'binding', 'completed'
+        ];
+        const currentIdx = stepOrder.indexOf(newStatus);
+        const newSteps = o.steps.map((step, i) => ({
+          ...step,
+          status: i < currentIdx ? 'done' as const : i === currentIdx ? 'current' as const : 'pending' as const,
+        }));
+        const currentStep = newSteps.find(s => s.status === 'current') || newSteps[newSteps.length - 1];
+        return {
+          ...o,
+          status: newStatus,
+          currentStepKey: newStatus,
+          currentStep,
+          steps: newSteps,
+        };
+      })
+    }));
+  },
+
   getOrders: () => get().orders,
 
   getOrder: (id) => {
@@ -134,6 +214,11 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
 
   addReview: (input) => {
+    // 评价去重：同一订单同一买家不能重复评价
+    if (input.orderId && get().hasReviewedOrder(input.orderId)) {
+      return null;
+    }
+
     const reviewer = get().currentUser;
     const newId = `r_${Date.now()}`;
     const now = new Date();
@@ -163,10 +248,19 @@ export const useAppStore = create<AppState>((set, get) => ({
     return newReview;
   },
 
+  hasReviewedOrder: (orderId) => {
+    const reviewerId = get().currentUser.id;
+    return get().reviews.some(r => r.orderId === orderId && r.reviewerId === reviewerId);
+  },
+
+  getReviewsByOrder: (orderId) => {
+    return get().reviews.filter(r => r.orderId === orderId);
+  },
+
   getReviewsByUser: (userId) => {
     const fromStore = get().reviews.filter(r => r.revieweeId === userId);
-    if (fromStore.length > 0) return fromStore;
-    return getReviewsBySeller(userId);
+    const fromMock = getReviewsBySeller(userId);
+    return [...fromStore, ...fromMock];
   },
 
   addToBlacklist: (userId) => {

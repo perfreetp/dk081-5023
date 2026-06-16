@@ -106,6 +106,8 @@ type AccountInput = {
   status?: GameAccount['status'];
   viewCount?: number;
   favoriteCount?: number;
+  chatCount?: number;
+  dealCount?: number;
   publishTime?: string;
   withVerify?: boolean;
   canRefund?: boolean;
@@ -141,6 +143,8 @@ const buildAccount = (input: AccountInput): GameAccount => {
     status: input.status || 'on_sale',
     viewCount: input.viewCount || Math.floor(Math.random() * 5000) + 100,
     favoriteCount: input.favoriteCount || Math.floor(Math.random() * 500) + 10,
+    chatCount: input.chatCount ?? Math.floor(Math.random() * 50) + 3,
+    dealCount: input.dealCount ?? (input.status === 'sold' ? 1 : 0),
     publishTime,
     publishedAt: publishTime,
     canRefund: input.canRefund ?? true,

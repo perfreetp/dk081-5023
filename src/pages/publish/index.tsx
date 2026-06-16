@@ -68,6 +68,21 @@ const PublishPage: React.FC = () => {
     return accounts.filter(a => a.sellerId === currentUser.id);
   }, [accounts, currentUser.id]);
 
+  type PublishTab = 'all' | 'on_sale' | 'offline' | 'sold';
+  const [activeTab, setActiveTab] = useState<PublishTab>('all');
+
+  const tabList: { key: PublishTab; label: string }[] = [
+    { key: 'all', label: '全部' },
+    { key: 'on_sale', label: '在售中' },
+    { key: 'offline', label: '已下架' },
+    { key: 'sold', label: '已售出' },
+  ];
+
+  const filteredMyAccounts = useMemo(() => {
+    if (activeTab === 'all') return myPublishedAccounts;
+    return myPublishedAccounts.filter(a => a.status === activeTab);
+  }, [myPublishedAccounts, activeTab]);
+
   const handleToggleStatus = (accountId: string, currentStatus: string) => {
     Taro.showModal({
       title: currentStatus === 'on_sale' ? '确认下架' : '确认上架',
@@ -207,13 +222,15 @@ const PublishPage: React.FC = () => {
           setTimeout(() => {
             Taro.showModal({
               title: '发布成功',
-              content: '您的账号已成功上架，可在"我的发布"中查看。是否立即前往查看？',
+              content: '您的账号已成功上架，可在"我的发布"中查看。是否立即前往管理？',
               confirmText: '查看我的发布',
               cancelText: '返回首页',
               confirmColor: '#10B981',
               success: (r) => {
                 if (r.confirm) {
-                  Taro.switchTab({ url: '/pages/profile/index' });
+                  // 当前就在发布页，直接 rollToTop 展示我的发布区域
+                  Taro.pageScrollTo({ scrollTop: 0, duration: 300 });
+                  Taro.showToast({ title: '已在我的发布中展示 ✅', icon: 'none' });
                 } else {
                   Taro.switchTab({ url: '/pages/home/index' });
                 }
@@ -236,9 +253,33 @@ const PublishPage: React.FC = () => {
             </View>
             <Text className={styles.myPublishCount}>共 {myPublishedAccounts.length} 个账号</Text>
           </View>
+
+          <View className={styles.tabBar}>
+            {tabList.map(tab => {
+              const count = tab.key === 'all' ? myPublishedAccounts.length : myPublishedAccounts.filter(a => a.status === tab.key).length;
+              return (
+                <View
+                  key={tab.key}
+                  className={`${styles.tabItem} ${activeTab === tab.key ? styles.tabItemActive : ''}`}
+                  onClick={() => setActiveTab(tab.key)}
+                >
+                  <Text className={styles.tabLabel}>{tab.label}</Text>
+                  <Text className={styles.tabBadge}>{count}</Text>
+                </View>
+              );
+            })}
+          </View>
+
           {myPublishedAccounts.length > 0 ? (
             <View className={styles.myPublishList}>
-              {myPublishedAccounts.map((a) => (
+              {filteredMyAccounts.map((a) => {
+                const viewC = a.viewCount || 0;
+                const favC = a.favoriteCount || 0;
+                const chatC = a.chatCount || 0;
+                const dealC = a.dealCount || 0;
+                const inquiryRate = viewC > 0 ? ((chatC / viewC) * 100).toFixed(1) : '0.0';
+                const convRate = chatC > 0 ? ((dealC / chatC) * 100).toFixed(1) : '0.0';
+                return (
                 <View key={a.id} className={styles.myPublishItem}>
                   <View className={styles.myPublishItemHeader} onClick={() => handleViewDetail(a.id)}>
                     <Image className={styles.myPublishCover} src={a.coverImage} mode='aspectFill' />
@@ -257,6 +298,52 @@ const PublishPage: React.FC = () => {
                       </View>
                     </View>
                   </View>
+
+                  <View className={styles.statsRow}>
+                    <View className={styles.statItem}>
+                      <Text className={styles.statIcon}>👁️</Text>
+                      <View className={styles.statContent}>
+                        <Text className={styles.statValue}>{viewC.toLocaleString()}</Text>
+                        <Text className={styles.statLabel}>浏览</Text>
+                      </View>
+                    </View>
+                    <View className={styles.statItem}>
+                      <Text className={styles.statIcon}>⭐</Text>
+                      <View className={styles.statContent}>
+                        <Text className={styles.statValue}>{favC}</Text>
+                        <Text className={styles.statLabel}>收藏</Text>
+                      </View>
+                    </View>
+                    <View className={styles.statItem}>
+                      <Text className={styles.statIcon}>💬</Text>
+                      <View className={styles.statContent}>
+                        <Text className={styles.statValue}>{chatC}</Text>
+                        <Text className={styles.statLabel}>咨询</Text>
+                      </View>
+                    </View>
+                    <View className={styles.statItem}>
+                      <Text className={styles.statIcon}>📊</Text>
+                      <View className={styles.statContent}>
+                        <Text className={styles.statValue}>{inquiryRate}%</Text>
+                        <Text className={styles.statLabel}>咨询率</Text>
+                      </View>
+                    </View>
+                    <View className={styles.statItem}>
+                      <Text className={styles.statIcon}>💰</Text>
+                      <View className={styles.statContent}>
+                        <Text className={styles.statValue}>{dealC}</Text>
+                        <Text className={styles.statLabel}>成交</Text>
+                      </View>
+                    </View>
+                    <View className={styles.statItem}>
+                      <Text className={styles.statIcon}>🎯</Text>
+                      <View className={styles.statContent}>
+                        <Text className={styles.statValue}>{convRate}%</Text>
+                        <Text className={styles.statLabel}>转化率</Text>
+                      </View>
+                    </View>
+                  </View>
+
                   {a.status !== 'sold' && a.status !== 'pending' && (
                     <View className={styles.myPublishActions}>
                       <View
@@ -274,7 +361,13 @@ const PublishPage: React.FC = () => {
                     </View>
                   )}
                 </View>
-              ))}
+                );
+              })}
+              {filteredMyAccounts.length === 0 && (
+                <View className={styles.emptyPublish}>
+                  <Text>此状态下暂无账号</Text>
+                </View>
+              )}
             </View>
           ) : (
             <View className={styles.emptyPublish}>

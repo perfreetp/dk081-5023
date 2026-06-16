@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { View, Text, Button, Textarea, Image } from '@tarojs/components'
 import Taro, { useRouter } from '@tarojs/taro'
 import styles from './index.module.scss'
@@ -36,6 +36,8 @@ export default function ReviewPage() {
   const orderId = router.params.orderId || 'o3'
   const getOrder = useAppStore(s => s.getOrder)
   const addReview = useAppStore(s => s.addReview)
+  const hasReviewedOrder = useAppStore(s => s.hasReviewedOrder)
+  const updateOrderStatus = useAppStore(s => s.updateOrderStatus)
   const addToBlacklist = useAppStore(s => s.addToBlacklist)
   const removeFromBlacklist = useAppStore(s => s.removeFromBlacklist)
   const isBlacklisted = useAppStore(s => s.isBlacklisted)
@@ -44,6 +46,16 @@ export default function ReviewPage() {
   const account = useMemo(() => order.account, [order])
   const seller = useMemo(() => order.seller, [order])
   const sellerBlacklisted = isBlacklisted(seller.id)
+  const alreadyReviewed = hasReviewedOrder(order.id)
+
+  useEffect(() => {
+    if (alreadyReviewed) {
+      Taro.showToast({ title: '您已对此订单评价', icon: 'none' })
+      setTimeout(() => {
+        Taro.redirectTo({ url: `/pages/order-detail/index?id=${order.id}` })
+      }, 1000)
+    }
+  }, [alreadyReviewed, order.id])
 
   const [overallRating, setOverallRating] = useState(5)
   const [subRatings, setSubRatings] = useState({
@@ -122,6 +134,10 @@ export default function ReviewPage() {
       Taro.showToast({ title: '请选择评分', icon: 'none' })
       return
     }
+    if (alreadyReviewed) {
+      Taro.showToast({ title: '您已评价，不能重复提交', icon: 'none' })
+      return
+    }
     Taro.showModal({
       title: '确认提交评价',
       content: `综合 ${overallRating} 星评价，${selectedPosTags.length + selectedNegTags.length}个标签，${comment.length > 0 ? comment.length + '字评价' : '无文字评价'}${(isBlacklist || sellerBlacklisted) ? '；卖家将被加入黑名单' : ''}`,
@@ -129,7 +145,7 @@ export default function ReviewPage() {
       confirmColor: '#10B981',
       success: (res) => {
         if (res.confirm) {
-          addReview({
+          const review = addReview({
             orderId: order.id,
             revieweeId: seller.id,
             rating: overallRating,
@@ -139,11 +155,16 @@ export default function ReviewPage() {
             images: images.length > 0 ? images : undefined,
             isAnonymous: anonymous,
           })
+          if (!review) {
+            Taro.showToast({ title: '您已评价，不能重复提交', icon: 'none' })
+            return
+          }
           if (isBlacklist && !sellerBlacklisted) {
             addToBlacklist(seller.id)
           }
+          updateOrderStatus(order.id, 'completed')
           Taro.showToast({ title: '评价成功！信用已更新', icon: 'success' })
-          setTimeout(() => Taro.switchTab({ url: '/pages/profile/index' }), 1000)
+          setTimeout(() => Taro.redirectTo({ url: `/pages/order-detail/index?id=${order.id}` }), 1000)
         }
       }
     })
