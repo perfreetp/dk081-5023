@@ -90,7 +90,11 @@ const PublishPage: React.FC = () => {
       success: (res) => {
         const game = gameCategories[res.tapIndex];
         setSelectedGame(game.id);
-        setSelectedServer(null);
+        if (game.servers && game.servers.length === 1) {
+          setSelectedServer(game.servers[0].id);
+        } else {
+          setSelectedServer(null);
+        }
       },
     });
   };

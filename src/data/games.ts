@@ -85,11 +85,17 @@ export const gameCategories: GameCategory[] = [
     id: 'g9',
     name: '金铲铲之战',
     icon: '⚜️',
+    servers: [
+      { id: 's_g9_common', name: '全服通用', region: '通用' },
+    ],
   },
   {
     id: 'g10',
     name: '更多游戏',
     icon: '🎮',
+    servers: [
+      { id: 's_g10_common', name: '通用区服', region: '通用' },
+    ],
   },
 ];
 

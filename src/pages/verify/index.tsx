@@ -142,35 +142,60 @@ export default function VerifyPage() {
   }
 
   const handleConfirmReport = () => {
-    Taro.showModal({
-      title: '确认验号结果',
-      content: '确认验号结果与描述一致？确认后将进入换绑环节，资金将继续冻结至换绑完成',
-      confirmText: '确认无误',
-      confirmColor: '#10B981',
-      success: (res) => {
-        if (res.confirm) {
-          Taro.showToast({ title: '确认通过', icon: 'success' })
-          setTimeout(() => {
-            Taro.redirectTo({ url: `/pages/order-detail/index?id=${order.id}` })
-          }, 800)
+    if (order) {
+      Taro.showModal({
+        title: '确认验号结果',
+        content: '确认验号结果与描述一致？确认后将进入换绑环节，资金将继续冻结至换绑完成',
+        confirmText: '确认无误',
+        confirmColor: '#10B981',
+        success: (res) => {
+          if (res.confirm) {
+            Taro.showToast({ title: '确认通过', icon: 'success' })
+            setTimeout(() => {
+              Taro.redirectTo({ url: `/pages/order-detail/index?id=${order.id}` })
+            }, 800)
+          }
         }
-      }
-    })
+      })
+    } else {
+      Taro.showModal({
+        title: '验号报告预览',
+        content: '此为验号报告预览。下单并进入担保交易后，将由平台验号师进行正式验号并出具完整报告。是否返回账号详情？',
+        confirmText: '返回详情',
+        cancelText: '继续查看',
+        confirmColor: '#10B981',
+        success: (res) => {
+          if (res.confirm) {
+            Taro.navigateBack()
+          }
+        }
+      })
+    }
   }
 
   const handleDispute = () => {
-    Taro.showModal({
-      title: '描述不符申诉',
-      content: '如验号结果与卖家描述存在重大差异，可发起申诉。平台将介入核实，确认后可全额退款',
-      confirmText: '发起申诉',
-      cancelText: '再想想',
-      confirmColor: '#EF4444',
-      success: (res) => {
-        if (res.confirm) {
-          Taro.redirectTo({ url: `/pages/appeal/index?orderId=${order.id}` })
+    if (order) {
+      Taro.showModal({
+        title: '描述不符申诉',
+        content: '如验号结果与卖家描述存在重大差异，可发起申诉。平台将介入核实，确认后可全额退款',
+        confirmText: '发起申诉',
+        cancelText: '再想想',
+        confirmColor: '#EF4444',
+        success: (res) => {
+          if (res.confirm) {
+            Taro.redirectTo({ url: `/pages/appeal/index?orderId=${order.id}` })
+          }
         }
-      }
-    })
+      })
+    } else {
+      Taro.showModal({
+        title: '发起申诉',
+        content: '此为验号报告预览，暂无法发起申诉。请先下单进入担保交易，如验号结果不符可随时发起退款申诉。',
+        confirmText: '我知道了',
+        showCancel: false,
+        confirmColor: '#3B82F6',
+      })
+    }
   }
 
   const canNext = (() => {

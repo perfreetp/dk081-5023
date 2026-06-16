@@ -168,25 +168,28 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   updateUserCredit: (userId, ratingDelta) => {
     set(s => {
+      let updatedSeller: User | null = null;
+
       const updatedUsers = s.users.map(u => {
-        if (u.id !== userId && u.id !== s.currentUser.id) {
-          const targetId = u.id;
-          if (targetId === userId) {
-            const newScore = Math.max(0, Math.min(100, u.creditScore + ratingDelta));
-            const newLevel = newScore >= 90 ? 'excellent' : newScore >= 75 ? 'good' : newScore >= 60 ? 'normal' : 'poor';
-            const newTotal = u.totalDeals + 1;
-            const newGood = ratingDelta >= 0 ? (u.goodRate * u.totalDeals + 1) / newTotal : (u.goodRate * u.totalDeals) / newTotal;
-            return {
-              ...u,
-              creditScore: newScore,
-              creditLevel: newLevel,
-              totalDeals: newTotal,
-              totalSales: newTotal,
-              successRate: Math.max(0, Math.min(1, newGood)),
-              goodRate: Math.max(0, Math.min(1, newGood)),
-              reviewCount: (u.reviewCount || 0) + 1,
-            };
-          }
+        if (u.id === userId && u.id !== s.currentUser.id) {
+          const newScore = Math.max(0, Math.min(100, u.creditScore + ratingDelta));
+          const newLevel = newScore >= 90 ? 'excellent' : newScore >= 75 ? 'good' : newScore >= 60 ? 'normal' : 'poor';
+          const newTotal = u.totalDeals + 1;
+          const newGood = ratingDelta >= 0 
+            ? (u.goodRate * u.totalDeals + 1) / newTotal 
+            : (u.goodRate * u.totalDeals) / newTotal;
+          const cappedGood = Math.max(0, Math.min(1, newGood));
+          updatedSeller = {
+            ...u,
+            creditScore: newScore,
+            creditLevel: newLevel,
+            totalDeals: newTotal,
+            totalSales: newTotal,
+            successRate: cappedGood,
+            goodRate: cappedGood,
+            reviewCount: (u.reviewCount || 0) + 1,
+          };
+          return updatedSeller;
         }
         return u;
       });
@@ -196,20 +199,35 @@ export const useAppStore = create<AppState>((set, get) => ({
         const newScore = Math.max(0, Math.min(100, s.currentUser.creditScore + ratingDelta));
         const newLevel = newScore >= 90 ? 'excellent' : newScore >= 75 ? 'good' : newScore >= 60 ? 'normal' : 'poor';
         const newTotal = s.currentUser.totalDeals + 1;
-        const newGood = ratingDelta >= 0 ? (s.currentUser.goodRate * s.currentUser.totalDeals + 1) / newTotal : (s.currentUser.goodRate * s.currentUser.totalDeals) / newTotal;
+        const newGood = ratingDelta >= 0 
+          ? (s.currentUser.goodRate * s.currentUser.totalDeals + 1) / newTotal 
+          : (s.currentUser.goodRate * s.currentUser.totalDeals) / newTotal;
+        const cappedGood = Math.max(0, Math.min(1, newGood));
         newCurrentUser = {
           ...s.currentUser,
           creditScore: newScore,
           creditLevel: newLevel,
           totalDeals: newTotal,
           totalSales: newTotal,
-          successRate: Math.max(0, Math.min(1, newGood)),
-          goodRate: Math.max(0, Math.min(1, newGood)),
+          successRate: cappedGood,
+          goodRate: cappedGood,
           reviewCount: (s.currentUser.reviewCount || 0) + 1,
         };
+        updatedSeller = newCurrentUser;
       }
 
-      return { users: updatedUsers, currentUser: newCurrentUser };
+      const updatedAccounts = s.accounts.map(a => {
+        if (a.sellerId === userId && updatedSeller) {
+          return { ...a, seller: updatedSeller };
+        }
+        return a;
+      });
+
+      return { 
+        users: updatedUsers, 
+        currentUser: newCurrentUser,
+        accounts: updatedAccounts,
+      };
     });
   },
 }));

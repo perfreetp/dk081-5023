@@ -3,7 +3,8 @@ import { View, Text, Image } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import classnames from 'classnames';
 import { GameAccount } from '@/types';
-import { formatPrice, creditLevelInfo } from '@/data/users';
+import { formatPrice } from '@/utils/format';
+import { creditLevelInfo } from '@/data/users';
 import styles from './index.module.scss';
 
 interface AccountCardProps {
