@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { View, Text, Button, Image } from '@tarojs/components'
 import Taro, { useRouter } from '@tarojs/taro'
 import styles from './index.module.scss'
-import { mockAccounts } from '../../data/accounts'
-import { mockOrders } from '../../data/orders'
+import { useAppStore } from '@/stores'
+import type { VerifyReport } from '@/types'
 
 type VerifyStep = 'login' | 'basic' | 'assets' | 'security' | 'report'
 
@@ -15,9 +15,42 @@ const stepNavs: { key: VerifyStep; index: string; title: string }[] = [
   { key: 'report', index: '5', title: '验号报告' },
 ]
 
+const createFallbackReport = (accountId: string): VerifyReport => ({
+  id: `v_${accountId}`,
+  reportId: `VRP${Date.now()}`,
+  accountId,
+  verifier: '平台验号师-小王',
+  verifyTime: '5分30秒',
+  levelMatched: true,
+  itemsMatched: true,
+  descriptionMatched: true,
+  screenshots: [],
+  notes: '账号信息与描述基本一致，各项指标正常，推荐放心购买。',
+  riskLevel: 'low',
+  score: 92,
+  totalItems: 12,
+  items: [
+    { id: 'f1', name: '账号可正常登录', value: '正常', category: 'basic', passed: true, warning: false },
+    { id: 'f2', name: '账号状态', value: '无封禁/冻结', category: 'basic', passed: true, warning: false },
+    { id: 'f3', name: '防沉迷限制', value: '已成年', category: 'basic', passed: true, warning: false },
+    { id: 'f4', name: '段位信息', value: '与描述一致', category: 'basic', passed: true, warning: false },
+    { id: 'f5', name: '资产核对', value: '与描述一致', category: 'assets', passed: true, warning: false },
+    { id: 'f6', name: '密保手机绑定', value: '已绑定可换绑', category: 'security', passed: true, warning: true, note: '需买家配合换绑' },
+    { id: 'f7', name: '实名认证状态', value: '已实名可换绑', category: 'security', passed: true, warning: false },
+    { id: 'f8', name: '历史找回记录', value: '无', category: 'security', passed: true, warning: false },
+    { id: 'f9', name: '账号申诉记录', value: '无', category: 'security', passed: true, warning: false },
+    { id: 'f10', name: '交易风险评估', value: '低风险', category: 'security', passed: true, warning: false },
+  ],
+})
+
 export default function VerifyPage() {
   const router = useRouter()
   const mockReportMode = router.params.mock === '1'
+  const orderIdFromRoute = router.params.orderId
+  const accountIdFromRoute = router.params.accountId
+
+  const getOrder = useAppStore(s => s.getOrder)
+  const getAccount = useAppStore(s => s.getAccount)
 
   const [currentStep, setCurrentStep] = useState<VerifyStep>(mockReportMode ? 'report' : 'login')
   const [loginImages, setLoginImages] = useState<string[]>(mockReportMode ? [
@@ -33,9 +66,23 @@ export default function VerifyPage() {
     'https://picsum.photos/seed/assets3/400/400',
   ] : [])
 
-  const account = mockAccounts[0]
-  const order = mockOrders.find(o => o.accountId === account.id) || mockOrders[0]
-  const verifyReport = account.verifyReport!
+  const order = useMemo(() => {
+    if (orderIdFromRoute) return getOrder(orderIdFromRoute) || undefined
+    return undefined
+  }, [orderIdFromRoute, getOrder])
+
+  const account = useMemo(() => {
+    if (order) return order.account
+    if (accountIdFromRoute) return getAccount(accountIdFromRoute)
+    return getAccount('a1')
+  }, [order, accountIdFromRoute, getAccount])
+
+  const orderForNav = order || useAppStore.getState().getOrders()[0]
+
+  const verifyReport = useMemo(() => {
+    if (account?.verifyReport) return account.verifyReport
+    return createFallbackReport(account?.id || 'unknown')
+  }, [account])
 
   const [timer, setTimer] = useState({ h: '00', m: mockReportMode ? '05' : '10', s: mockReportMode ? '23' : '00' })
 

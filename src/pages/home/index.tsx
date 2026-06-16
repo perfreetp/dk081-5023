@@ -4,8 +4,8 @@ import Taro, { useDidShow } from '@tarojs/taro';
 import classnames from 'classnames';
 import AccountCard from '@/components/AccountCard';
 import { gameCategories, rankFilters, priceRanges, sortOptions } from '@/data/games';
-import { mockAccounts } from '@/data/accounts';
 import { formatNumber } from '@/utils/format';
+import { useAppStore } from '@/stores';
 import styles from './index.module.scss';
 
 const HomePage: React.FC = () => {
@@ -14,13 +14,15 @@ const HomePage: React.FC = () => {
   const [selectedRank, setSelectedRank] = useState<string | null>(null);
   const [selectedPrice, setSelectedPrice] = useState<string | null>(null);
   const [activeSort, setActiveSort] = useState('sort1');
+  const getAccountsFiltered = useAppStore(s => s.getAccountsFiltered);
+  const isBlacklisted = useAppStore(s => s.isBlacklisted);
 
   useDidShow(() => {
-    console.log('[HomePage] Page show');
+    setActiveSort(prev => prev);
   });
 
   const filteredAccounts = useMemo(() => {
-    let list = [...mockAccounts];
+    let list = getAccountsFiltered();
     if (selectedGame) {
       list = list.filter(a => a.gameId === selectedGame);
     }

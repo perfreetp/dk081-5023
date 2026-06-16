@@ -1,25 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { View, Text, ScrollView, Image } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import classnames from 'classnames';
 import { mockConversations } from '@/data/chats';
 import { formatRelativeTime } from '@/utils/format';
+import { useAppStore } from '@/stores';
 import styles from './index.module.scss';
 
 const ChatPage: React.FC = () => {
   const [conversations] = useState(mockConversations);
+  const isBlacklisted = useAppStore(s => s.isBlacklisted);
+
+  const filteredConversations = useMemo(() => {
+    return conversations.filter(c => {
+      if (c.type !== 'user') return true;
+      return !isBlacklisted(c.targetUserId);
+    });
+  }, [conversations, isBlacklisted]);
 
   const handleConvClick = (convId: string) => {
     console.log('[ChatPage] Open conversation:', convId);
     Taro.showToast({ title: '聊天详情开发中', icon: 'none' });
   };
 
-  const sortedConversations = [...conversations].sort((a, b) => {
+  const sortedConversations = [...filteredConversations].sort((a, b) => {
     if (a.isTop !== b.isTop) return a.isTop ? -1 : 1;
     return new Date(b.lastMessageTime).getTime() - new Date(a.lastMessageTime).getTime();
   });
 
-  const totalUnread = conversations.reduce((sum, c) => sum + c.unreadCount, 0);
+  const totalUnread = filteredConversations.reduce((sum, c) => sum + c.unreadCount, 0);
 
   return (
     <ScrollView scrollY className={styles.page} enableBackToTop>

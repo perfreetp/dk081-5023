@@ -3,9 +3,9 @@ import { View, Text, ScrollView, Image } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import classnames from 'classnames';
 import ProgressStep from '@/components/ProgressStep';
-import { mockOrders, orderStatusLabels, getOrdersByUser } from '@/data/orders';
-import { currentUser } from '@/data/users';
+import { orderStatusLabels } from '@/data/orders';
 import { formatCountdown, formatPriceFull } from '@/utils/format';
+import { useAppStore } from '@/stores';
 import styles from './index.module.scss';
 
 type TabKey = 'all' | 'buyer' | 'seller';
@@ -14,11 +14,13 @@ type SubTabKey = 'all' | 'pending' | 'processing' | 'completed' | 'appealing';
 const EscrowPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabKey>('all');
   const [activeSubTab, setActiveSubTab] = useState<SubTabKey>('all');
+  const currentUserId = useAppStore(s => s.currentUser.id);
+  const getOrdersByUser = useAppStore(s => s.getOrdersByUser);
+  const allOrders = useAppStore(s => s.orders);
 
   const userOrders = useMemo(() => {
-    let list = mockOrders;
-    if (activeTab === 'buyer') list = list.filter(o => o.buyerId === 'current');
-    if (activeTab === 'seller') list = list.filter(o => o.sellerId === 'current');
+    let list = getOrdersByUser(currentUserId, activeTab);
+    if (activeTab === 'all') list = getOrdersByUser(currentUserId, 'all');
     switch (activeSubTab) {
       case 'pending':
         list = list.filter(o => ['pending_payment', 'pending_verify', 'verify_done'].includes(o.status));
@@ -37,16 +39,16 @@ const EscrowPage: React.FC = () => {
   }, [activeTab, activeSubTab]);
 
   const stats = useMemo(() => {
-    const all = mockOrders.filter(o => o.buyerId === 'current' || o.sellerId === 'current');
+    const all = getOrdersByUser(currentUserId, 'all');
     const processing = all.filter(o => 
       ['pending_payment', 'pending_verify', 'verifying', 'verify_done', 'pending_binding', 'binding'].includes(o.status)
     ).length;
-    const totalSpent = all.filter(o => o.buyerId === 'current' && o.status === 'completed')
+    const totalSpent = all.filter(o => o.buyerId === currentUserId && o.status === 'completed')
       .reduce((sum, o) => sum + o.totalAmount, 0);
-    const totalEarned = all.filter(o => o.sellerId === 'current' && o.status === 'completed')
+    const totalEarned = all.filter(o => o.sellerId === currentUserId && o.status === 'completed')
       .reduce((sum, o) => sum + o.finalPrice - o.serviceFee, 0);
     return { processing, totalSpent, totalEarned };
-  }, []);
+  }, [currentUserId, getOrdersByUser]);
 
   const handleCardClick = (orderId: string) => {
     console.log('[EscrowPage] Open order detail:', orderId);
@@ -75,8 +77,8 @@ const EscrowPage: React.FC = () => {
 
   const tabs: { key: TabKey; label: string; count?: number }[] = [
     { key: 'all', label: '全部' },
-    { key: 'buyer', label: '我是买家', count: mockOrders.filter(o => o.buyerId === 'current').length },
-    { key: 'seller', label: '我是卖家', count: mockOrders.filter(o => o.sellerId === 'current').length },
+    { key: 'buyer', label: '我是买家', count: getOrdersByUser(currentUserId, 'buyer').length },
+    { key: 'seller', label: '我是卖家', count: getOrdersByUser(currentUserId, 'seller').length },
   ];
 
   const subTabs: { key: SubTabKey; label: string }[] = [
@@ -144,7 +146,7 @@ const EscrowPage: React.FC = () => {
         {userOrders.length > 0 ? (
           userOrders.map(order => {
             const statusInfo = orderStatusLabels[order.status];
-            const isBuyer = order.buyerId === 'current';
+            const isBuyer = order.buyerId === currentUserId;
             return (
               <View
                 key={order.id}

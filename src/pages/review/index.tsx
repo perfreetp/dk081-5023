@@ -2,10 +2,8 @@ import { useState, useMemo } from 'react'
 import { View, Text, Button, Textarea, Image } from '@tarojs/components'
 import Taro, { useRouter } from '@tarojs/taro'
 import styles from './index.module.scss'
-import { mockAccounts } from '../../data/accounts'
-import { mockOrders } from '../../data/orders'
-import { mockUsers } from '../../data/users'
 import { formatPrice } from '../../utils/format'
+import { useAppStore } from '@/stores'
 
 const positiveTags = [
   '验号速度快', '账号描述一致', '换绑流程顺畅', '沟通态度好',
@@ -35,11 +33,17 @@ const ratingTexts = [
 
 export default function ReviewPage() {
   const router = useRouter()
-  const orderId = router.params.orderId || mockOrders[0].id
+  const orderId = router.params.orderId || 'o3'
+  const getOrder = useAppStore(s => s.getOrder)
+  const addReview = useAppStore(s => s.addReview)
+  const addToBlacklist = useAppStore(s => s.addToBlacklist)
+  const removeFromBlacklist = useAppStore(s => s.removeFromBlacklist)
+  const isBlacklisted = useAppStore(s => s.isBlacklisted)
 
-  const order = useMemo(() => mockOrders.find(o => o.id === orderId) || mockOrders[0], [orderId])
-  const account = useMemo(() => mockAccounts.find(a => a.id === order.accountId) || mockAccounts[0], [order])
-  const seller = useMemo(() => mockUsers.find(u => u.id === order.sellerId) || mockUsers[1], [order])
+  const order = useMemo(() => getOrder(orderId) || useAppStore.getState().orders[0], [orderId, getOrder])
+  const account = useMemo(() => order.account, [order])
+  const seller = useMemo(() => order.seller, [order])
+  const sellerBlacklisted = isBlacklisted(seller.id)
 
   const [overallRating, setOverallRating] = useState(5)
   const [subRatings, setSubRatings] = useState({
@@ -90,7 +94,7 @@ export default function ReviewPage() {
   }
 
   const toggleBlacklist = () => {
-    if (!isBlacklist) {
+    if (!sellerBlacklisted && !isBlacklist) {
       Taro.showModal({
         title: '加入黑名单',
         content: '加入黑名单后，将不会再看到该卖家发布的商品，且对方无法与您发起聊天',
@@ -98,12 +102,16 @@ export default function ReviewPage() {
         confirmColor: '#EF4444',
         success: (res) => {
           if (res.confirm) {
+            addToBlacklist(seller.id)
             setIsBlacklist(true)
             Taro.showToast({ title: '已加入黑名单', icon: 'none' })
           }
         }
       })
     } else {
+      if (sellerBlacklisted) {
+        removeFromBlacklist(seller.id)
+      }
       setIsBlacklist(false)
       Taro.showToast({ title: '已移除黑名单', icon: 'none' })
     }
@@ -116,13 +124,26 @@ export default function ReviewPage() {
     }
     Taro.showModal({
       title: '确认提交评价',
-      content: `综合 ${overallRating} 星评价，${selectedPosTags.length + selectedNegTags.length}个标签，${comment.length > 0 ? comment.length + '字评价' : '无文字评价'}`,
+      content: `综合 ${overallRating} 星评价，${selectedPosTags.length + selectedNegTags.length}个标签，${comment.length > 0 ? comment.length + '字评价' : '无文字评价'}${(isBlacklist || sellerBlacklisted) ? '；卖家将被加入黑名单' : ''}`,
       confirmText: '确认提交',
       confirmColor: '#10B981',
       success: (res) => {
         if (res.confirm) {
-          Taro.showToast({ title: '评价成功', icon: 'success' })
-          setTimeout(() => Taro.navigateBack(), 800)
+          addReview({
+            orderId: order.id,
+            revieweeId: seller.id,
+            rating: overallRating,
+            subRatings,
+            tags: [...selectedPosTags, ...selectedNegTags],
+            content: comment,
+            images: images.length > 0 ? images : undefined,
+            isAnonymous: anonymous,
+          })
+          if (isBlacklist && !sellerBlacklisted) {
+            addToBlacklist(seller.id)
+          }
+          Taro.showToast({ title: '评价成功！信用已更新', icon: 'success' })
+          setTimeout(() => Taro.switchTab({ url: '/pages/profile/index' }), 1000)
         }
       }
     })
@@ -312,10 +333,10 @@ export default function ReviewPage() {
             </View>
           </View>
           <View
-            className={`${styles.blacklistBtn} ${isBlacklist ? styles.blacklistBtnActive : ''}`}
+            className={`${styles.blacklistBtn} ${(isBlacklist || sellerBlacklisted) ? styles.blacklistBtnActive : ''}`}
             onClick={toggleBlacklist}
           >
-            <Text>{isBlacklist ? '✓ 已拉黑' : '🚫 拉黑'}</Text>
+            <Text>{(isBlacklist || sellerBlacklisted) ? '✓ 已拉黑' : '🚫 拉黑'}</Text>
           </View>
         </View>
       </View>

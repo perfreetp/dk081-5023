@@ -2,21 +2,23 @@ import { useMemo } from 'react'
 import { View, Image, Text, Button } from '@tarojs/components'
 import Taro, { useRouter } from '@tarojs/taro'
 import styles from './index.module.scss'
-import { mockAccounts } from '../../data/accounts'
-import { mockUsers } from '../../data/users'
 import { creditLevelInfo } from '../../data/users'
 import { formatPrice, maskPhone } from '../../utils/format'
+import { useAppStore } from '@/stores'
 
 export default function AccountDetail() {
   const router = useRouter()
-  const accountId = router.params.id || mockAccounts[0].id
+  const accountId = router.params.id || 'a1'
+  const getAccount = useAppStore(s => s.getAccount)
+  const isBlacklisted = useAppStore(s => s.isBlacklisted)
+  const addToBlacklist = useAppStore(s => s.addToBlacklist)
 
   const account = useMemo(() => {
-    return mockAccounts.find(a => a.id === accountId) || mockAccounts[0]
-  }, [accountId])
+    return getAccount(accountId) || getAccount('a1')
+  }, [accountId, getAccount])
 
   const seller = useMemo(() => {
-    return mockUsers.find(u => u.id === account.sellerId) || mockUsers[0]
+    return account.seller
   }, [account])
 
   const creditInfo = creditLevelInfo[seller.creditLevel]

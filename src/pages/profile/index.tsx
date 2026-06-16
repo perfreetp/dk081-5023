@@ -1,34 +1,38 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, ScrollView, Image } from '@tarojs/components';
 import Taro from '@tarojs/taro';
-import { currentUser, creditLevelInfo } from '@/data/users';
-import { mockOrders } from '@/data/orders';
-import { creditLevelInfo as _creditLevelInfo } from '@/data/users';
+import { creditLevelInfo } from '@/data/users';
+import { useAppStore } from '@/stores';
 import styles from './index.module.scss';
 
 const ProfilePage: React.FC = () => {
-  const user = currentUser;
+  const user = useAppStore(s => s.currentUser);
+  const accounts = useAppStore(s => s.accounts);
+  const blacklist = useAppStore(s => s.blacklist);
+  const getOrdersByUser = useAppStore(s => s.getOrdersByUser);
   const creditInfo = creditLevelInfo[user.creditLevel];
 
-  const userOrders = mockOrders.filter(
-    o => o.buyerId === user.id || o.sellerId === user.id
-  );
+  const myPublishedCount = useMemo(() => 
+    accounts.filter(a => a.sellerId === user.id).length,
+    [accounts, user.id]);
+
+  const userOrders = useMemo(() => getOrdersByUser(user.id, 'all'), [user.id, getOrdersByUser]);
   const completedOrders = userOrders.filter(o => o.status === 'completed').length;
   const pendingOrders = userOrders.filter(
     o => ['pending_payment', 'pending_verify', 'verifying', 'verify_done', 'pending_binding', 'binding'].includes(o.status)
   ).length;
-  const soldCount = mockOrders.filter(o => o.sellerId === user.id && o.status === 'completed').length;
-  const boughtCount = mockOrders.filter(o => o.buyerId === user.id && o.status === 'completed').length;
+  const soldCount = userOrders.filter(o => o.sellerId === user.id && o.status === 'completed').length;
+  const boughtCount = userOrders.filter(o => o.buyerId === user.id && o.status === 'completed').length;
 
-  const menuGroups = [
+  const menuGroups = useMemo(() => [
     {
       title: '我的交易',
       items: [
-        { icon: '📦', text: '我发布的账号', badge: '3', action: () => Taro.switchTab({ url: '/pages/publish/index' }) },
-        { icon: '🛒', text: '我买到的账号', badge: `${boughtCount}`, action: () => Taro.switchTab({ url: '/pages/escrow/index' }) },
-        { icon: '💰', text: '我卖出的账号', badge: `${soldCount}`, action: () => Taro.switchTab({ url: '/pages/escrow/index' }) },
+        { icon: '📦', text: '我发布的账号', badge: myPublishedCount > 0 ? `${myPublishedCount}` : '', action: () => Taro.switchTab({ url: '/pages/publish/index' }) },
+        { icon: '🛒', text: '我买到的账号', badge: boughtCount > 0 ? `${boughtCount}` : '', action: () => Taro.switchTab({ url: '/pages/escrow/index' }) },
+        { icon: '💰', text: '我卖出的账号', badge: soldCount > 0 ? `${soldCount}` : '', action: () => Taro.switchTab({ url: '/pages/escrow/index' }) },
         { icon: '⭐', text: '我的评价', action: () => Taro.showToast({ title: '评价管理', icon: 'none' }) },
-        { icon: '🚫', text: '黑名单', badge: '', action: () => Taro.showToast({ title: '黑名单管理', icon: 'none' }) },
+        { icon: '🚫', text: '黑名单', badge: blacklist.size > 0 ? `${blacklist.size}` : '', action: () => Taro.showToast({ title: '黑名单管理', icon: 'none' }) },
       ],
     },
     {
@@ -48,7 +52,7 @@ const ProfilePage: React.FC = () => {
         { icon: '⚙️', text: '设置', action: () => Taro.showToast({ title: '设置', icon: 'none' }) },
       ],
     },
-  ];
+  ], [myPublishedCount, boughtCount, soldCount, blacklist.size, user.isVerified]);
 
   return (
     <ScrollView scrollY className={styles.page} enableBackToTop>

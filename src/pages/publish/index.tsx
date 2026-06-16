@@ -3,13 +3,32 @@ import { View, Text, Input, Textarea, ScrollView, Image } from '@tarojs/componen
 import Taro from '@tarojs/taro';
 import classnames from 'classnames';
 import { gameCategories } from '@/data/games';
-import { currentUser } from '@/data/users';
+import { useAppStore } from '@/stores';
+import type { AccountTag } from '@/types';
 import styles from './index.module.scss';
 
 const rankOptions = ['青铜', '白银', '黄金', '铂金', '钻石', '星耀', '王者', '荣耀王者', '大师', '宗师'];
 const highlightTags = ['满英雄', '满皮肤', '可议价', '急售', '送保险', '支持验号', '秒换绑'];
 
+const createTagsFromNames = (names: string[]): AccountTag[] => {
+  return names.map((name, i) => {
+    let type: AccountTag['type'] = 'other';
+    if (name.includes('段位') || name.includes('急售')) type = 'rank';
+    else if (name.includes('皮肤') || name.includes('英雄')) type = 'skin';
+    else if (name.includes('保险') || name.includes('验号') || name.includes('换绑')) type = 'equipment';
+    return {
+      id: `tag_pub_${Date.now()}_${i}`,
+      name,
+      value: name,
+      type,
+      highlight: true,
+    };
+  });
+};
+
 const PublishPage: React.FC = () => {
+  const currentUser = useAppStore(s => s.currentUser)
+  const addAccount = useAppStore(s => s.addAccount)
   const [selectedGame, setSelectedGame] = useState<string | null>(null);
   const [selectedServer, setSelectedServer] = useState<string | null>(null);
   const [title, setTitle] = useState('');
@@ -40,7 +59,7 @@ const PublishPage: React.FC = () => {
     return (p * 0.95).toFixed(2);
   }, [price]);
 
-  const canSubmit = selectedGame && title && price && agreed && images.length > 0;
+  const canSubmit = selectedGame && selectedServer && title && price && agreed && images.length > 0;
 
   const toggleTag = (tag: string) => {
     setSelectedTags(prev =>
@@ -53,27 +72,106 @@ const PublishPage: React.FC = () => {
       Taro.showToast({ title: '最多上传9张图片', icon: 'none' });
       return;
     }
+    const seed = `pub_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
     const newImages = [
       ...images,
-      `https://picsum.photos/id/${Math.floor(Math.random() * 200)}/300/300`,
+      `https://picsum.photos/seed/${seed}/900/600`,
     ];
     setImages(newImages);
-    console.log('[PublishPage] Add image, total:', newImages.length);
   };
 
   const handleRemoveImage = (index: number) => {
     setImages(prev => prev.filter((_, i) => i !== index));
   };
 
+  const handleSelectGame = () => {
+    Taro.showActionSheet({
+      itemList: gameCategories.map(g => g.name),
+      success: (res) => {
+        const game = gameCategories[res.tapIndex];
+        setSelectedGame(game.id);
+        setSelectedServer(null);
+      },
+    });
+  };
+
   const handleSubmit = () => {
-    if (!canSubmit) {
-      Taro.showToast({ title: '请完善必填信息', icon: 'none' });
+    if (!selectedGame) {
+      Taro.showToast({ title: '请选择游戏', icon: 'none' });
       return;
     }
-    console.log('[PublishPage] Submit publish', {
-      selectedGame, title, price, priceType, images,
+    if (!selectedServer) {
+      Taro.showToast({ title: '请选择区服', icon: 'none' });
+      return;
+    }
+    if (!title.trim()) {
+      Taro.showToast({ title: '请填写标题', icon: 'none' });
+      return;
+    }
+    if (!price || parseFloat(price) <= 0) {
+      Taro.showToast({ title: '请填写正确价格', icon: 'none' });
+      return;
+    }
+    if (images.length === 0) {
+      Taro.showToast({ title: '请至少上传1张截图', icon: 'none' });
+      return;
+    }
+    if (!agreed) {
+      Taro.showToast({ title: '请先勾选服务协议', icon: 'none' });
+      return;
+    }
+
+    const game = gameCategories.find(g => g.id === selectedGame)!;
+    const server = game.servers?.find(s => s.id === selectedServer)!;
+
+    Taro.showModal({
+      title: '确认发布账号',
+      content: `${game.name} - ${server.name}\n${title}\n售价：¥${price} (${priceType === 'fixed' ? '一口价' : '接受议价'})\n确认无误后提交？`,
+      confirmText: '确认发布',
+      confirmColor: '#10B981',
+      success: (modalRes) => {
+        if (modalRes.confirm) {
+          const newAcc = addAccount({
+            gameId: game.id,
+            gameName: game.name,
+            serverId: server.id,
+            serverName: server.name,
+            title: title.trim(),
+            description: description.trim(),
+            coverImage: images[0],
+            images,
+            rank: rank || '待补充',
+            rankLevel: Math.max(1, rankOptions.indexOf(rank) + 1 || 5),
+            tags: createTagsFromNames(selectedTags),
+            heroCount: heroCount ? parseInt(heroCount) : undefined,
+            skinCount: skinCount ? parseInt(skinCount) : undefined,
+            price: parseFloat(price),
+            originalPrice: originalPrice ? parseFloat(originalPrice) : undefined,
+            priceType,
+            withVerify: selectedTags.includes('支持验号'),
+            protectionDays: selectedTags.includes('送保险') ? 30 : 15,
+            canRefund: true,
+          });
+          Taro.showToast({ title: '🎉 发布成功！', icon: 'success' });
+          setTimeout(() => {
+            Taro.showModal({
+              title: '发布成功',
+              content: '您的账号已成功上架，可在"我的发布"中查看。是否立即前往查看？',
+              confirmText: '查看我的发布',
+              cancelText: '返回首页',
+              confirmColor: '#10B981',
+              success: (r) => {
+                if (r.confirm) {
+                  Taro.switchTab({ url: '/pages/profile/index' });
+                } else {
+                  Taro.switchTab({ url: '/pages/home/index' });
+                }
+              },
+            });
+          }, 1000);
+        }
+      },
     });
-    Taro.showToast({ title: '发布成功，等待审核', icon: 'success' });
   };
 
   return (
@@ -103,7 +201,7 @@ const PublishPage: React.FC = () => {
             </Text>
             <View
               className={styles.selectBox}
-              onClick={() => console.log('[PublishPage] Select game')}
+              onClick={handleSelectGame}
             >
               <Text className={classnames(styles.selectValue, !selectedGame && styles.placeholder)}>
                 {selectedGameInfo?.name || '请选择游戏'}

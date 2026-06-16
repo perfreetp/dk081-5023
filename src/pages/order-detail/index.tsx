@@ -2,42 +2,48 @@ import { useMemo, useEffect, useState } from 'react'
 import { View, Image, Text, Button } from '@tarojs/components'
 import Taro, { useRouter } from '@tarojs/taro'
 import styles from './index.module.scss'
-import { mockOrders } from '../../data/orders'
-import { mockAccounts } from '../../data/accounts'
-import { mockUsers } from '../../data/users'
 import { formatPrice, formatCountdown } from '../../utils/format'
+import { useAppStore } from '@/stores'
+
+const pad = (n: number) => String(n).padStart(2, '0')
+
+const parseSecondsToParts = (secs: number) => {
+  if (secs <= 0) return { h: '00', m: '00', s: '00' }
+  const h = Math.floor(secs / 3600)
+  const m = Math.floor((secs % 3600) / 60)
+  const s = secs % 60
+  return { h: pad(h), m: pad(m), s: pad(s) }
+}
 
 export default function OrderDetail() {
   const router = useRouter()
-  const orderId = router.params.id || mockOrders[0].id
+  const orderId = router.params.id || 'o1'
+  const getOrder = useAppStore(s => s.getOrder)
 
-  const [countdown, setCountdown] = useState('')
+  const [countdownSecs, setCountdownSecs] = useState(0)
 
   const order = useMemo(() => {
-    return mockOrders.find(o => o.id === orderId) || mockOrders[0]
-  }, [orderId])
+    return getOrder(orderId) || useAppStore.getState().orders[0]
+  }, [orderId, getOrder])
 
-  const account = useMemo(() => {
-    return mockAccounts.find(a => a.id === order.accountId) || mockAccounts[0]
-  }, [order])
-
-  const buyer = useMemo(() => {
-    return mockUsers.find(u => u.id === order.buyerId) || mockUsers[0]
-  }, [order])
-
-  const seller = useMemo(() => {
-    return mockUsers.find(u => u.id === order.sellerId) || mockUsers[0]
-  }, [order])
+  const account = useMemo(() => order.account, [order])
+  const buyer = useMemo(() => order.buyer, [order])
+  const seller = useMemo(() => order.seller, [order])
 
   useEffect(() => {
-    if (order.countdown) {
+    if (order.countdownSeconds > 0) {
+      setCountdownSecs(order.countdownSeconds)
       const timer = setInterval(() => {
-        setCountdown(formatCountdown(order.countdown!))
+        setCountdownSecs(prev => Math.max(0, prev - 1))
       }, 1000)
-      setCountdown(formatCountdown(order.countdown!))
       return () => clearInterval(timer)
+    } else {
+      setCountdownSecs(0)
     }
   }, [order])
+
+  const countdownStr = useMemo(() => formatCountdown(countdownSecs), [countdownSecs])
+  const countdownParts = useMemo(() => parseSecondsToParts(countdownSecs), [countdownSecs])
 
   const handleVerify = () => {
     Taro.navigateTo({ url: `/pages/verify/index?orderId=${order.id}` })
@@ -76,22 +82,15 @@ export default function OrderDetail() {
     Taro.showToast({ title: '正在接入客服...', icon: 'loading' })
   }
 
-  const parseCountdownParts = (str: string) => {
-    const parts = str.split(':')
-    return { h: parts[0] || '00', m: parts[1] || '00', s: parts[2] || '00' }
-  }
-
-  const countdownParts = parseCountdownParts(countdown)
-
   return (
     <View className={styles.page}>
       <View className={styles.statusHeader}>
         <View className={styles.statusRow}>
-          <Text className={styles.statusTitle}>{order.currentStep.title}</Text>
-          <View className={styles.statusBadge}>订单号: {order.id.slice(-8)}</View>
+          <Text className={styles.statusTitle}>{order.currentStep?.title || '订单详情'}</Text>
+          <View className={styles.statusBadge}>订单号: {order.orderNo.slice(-8)}</View>
         </View>
-        <Text className={styles.statusDesc}>{order.currentStep.description}</Text>
-        {order.countdown && (
+        <Text className={styles.statusDesc}>{order.currentStep?.description || '请查看下方详细信息'}</Text>
+        {countdownSecs > 0 && (
           <View className={styles.countdownCard}>
             <Text className={styles.countdownLabel}>⏰ 剩余处理时间</Text>
             <View className={styles.countdownTime}>
@@ -303,29 +302,29 @@ export default function OrderDetail() {
           </Button>
         </View>
         <View className={styles.footerBtnRight}>
-          {order.currentStepKey === 'verify' && (
+          {(order.currentStepKey === 'verifying' || order.currentStepKey === 'verify_done') && (
             <Button className={styles.primaryBtn} onClick={handleVerify}>
               查看验号
             </Button>
           )}
-          {order.currentStepKey === 'binding' && (
+          {(order.currentStepKey === 'binding' || order.currentStepKey === 'pending_binding') && (
             <Button className={styles.warnBtn} onClick={handleConfirmReceive}>
               确认收货放款
             </Button>
           )}
-          {(order.currentStepKey === 'paid' || order.currentStepKey === 'verify') && (
+          {(order.currentStepKey === 'pending_verify' || order.currentStepKey === 'verifying') && (
             <Button className={styles.dangerBtn}>
               取消交易
-            </Button>
-          )}
-          {order.currentStepKey === 'guarantee' && (
-            <Button className={styles.primaryBtn} onClick={handleConfirmReceive}>
-              已正常使用
             </Button>
           )}
           {order.currentStepKey === 'completed' && (
             <Button className={styles.primaryBtn} onClick={() => handleChatWithUser(seller.id)}>
               联系卖家
+            </Button>
+          )}
+          {order.currentStepKey === 'verify_done' && (
+            <Button className={styles.warnBtn} onClick={handleBinding}>
+              进入换绑
             </Button>
           )}
         </View>
