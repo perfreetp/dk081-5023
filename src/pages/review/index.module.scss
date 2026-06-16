@@ -1,0 +1,517 @@
+@import '../../styles/variables.scss';
+
+.page {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding-bottom: 160rpx;
+}
+
+.heroCard {
+  margin: $spacing-lg;
+  padding: $spacing-lg;
+  background: linear-gradient(135deg, $color-primary 0%, #059669 100%);
+  border-radius: $radius-lg;
+  color: #fff;
+}
+
+.heroTitle {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: $spacing-md;
+}
+
+.heroIcon {
+  font-size: 36rpx;
+}
+
+.heroTitleText {
+  font-size: 32rpx;
+  font-weight: 700;
+}
+
+.heroDesc {
+  font-size: 24rpx;
+  opacity: 0.9;
+  line-height: 1.6;
+  margin-bottom: $spacing-lg;
+}
+
+.heroAccount {
+  display: flex;
+  gap: $spacing-md;
+  padding: $spacing-md;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: $radius-md;
+  backdrop-filter: blur(10px);
+}
+
+.heroCover {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: $radius-md;
+  flex-shrink: 0;
+}
+
+.heroAccountInfo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6rpx;
+}
+
+.heroAccountTitle {
+  font-size: 26rpx;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.heroAccountMeta {
+  font-size: 22rpx;
+  opacity: 0.85;
+}
+
+.heroAccountPrice {
+  font-size: 28rpx;
+  font-weight: 700;
+}
+
+.section {
+  margin: $spacing-lg;
+  padding: $spacing-lg;
+  background: #fff;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+}
+
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: $spacing-lg;
+  padding-bottom: $spacing-md;
+  border-bottom: 1rpx solid $color-border-light;
+}
+
+.sectionTitleIcon {
+  font-size: 32rpx;
+}
+
+.sectionTitleText {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: $color-text-primary;
+}
+
+.overallRating {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: $spacing-lg 0;
+}
+
+.ratingLabel {
+  font-size: 28rpx;
+  color: $color-text-secondary;
+  margin-bottom: $spacing-md;
+}
+
+.starsRow {
+  display: flex;
+  gap: 16rpx;
+  margin-bottom: $spacing-md;
+}
+
+.star {
+  font-size: 72rpx;
+  line-height: 1;
+  transition: transform 0.15s;
+  color: $color-border;
+}
+
+.starActive {
+  color: #FBBF24;
+  filter: drop-shadow(0 2rpx 8rpx rgba(251, 191, 36, 0.4));
+}
+
+.starActive:active {
+  transform: scale(1.15);
+}
+
+.ratingText {
+  font-size: 32rpx;
+  font-weight: 700;
+  margin-bottom: 8rpx;
+}
+
+.ratingExcellent {
+  color: $color-primary;
+}
+
+.ratingGood {
+  color: $color-accent;
+}
+
+.ratingMid {
+  color: $color-warning;
+}
+
+.ratingBad {
+  color: $color-error;
+}
+
+.ratingHint {
+  font-size: 24rpx;
+  color: $color-text-tertiary;
+}
+
+.subRatings {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+  margin-top: $spacing-lg;
+  padding-top: $spacing-lg;
+  border-top: 1rpx solid $color-border-light;
+}
+
+.subRatingItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-md;
+}
+
+.subRatingLabel {
+  flex-shrink: 0;
+  font-size: 26rpx;
+  color: $color-text-secondary;
+  width: 160rpx;
+}
+
+.subStars {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  gap: 12rpx;
+}
+
+.subStar {
+  font-size: 44rpx;
+  color: $color-border;
+}
+
+.subStarActive {
+  color: #FBBF24;
+}
+
+.subRatingValue {
+  flex-shrink: 0;
+  width: 80rpx;
+  text-align: right;
+  font-size: 26rpx;
+  font-weight: 600;
+  color: $color-text-primary;
+}
+
+.tagSection {
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.tagGroup {
+  margin-bottom: $spacing-lg;
+  padding: $spacing-lg;
+  background: #fff;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+}
+
+.tagGroupTitle {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+}
+
+.tagList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+
+.tagItem {
+  padding: 14rpx 28rpx;
+  background: $color-bg-gray;
+  border-radius: $radius-pill;
+  font-size: 26rpx;
+  color: $color-text-secondary;
+  border: 2rpx solid transparent;
+  transition: all 0.2s;
+}
+
+.tagItemActive {
+  background: $color-primary-bg;
+  color: $color-primary;
+  border-color: $color-primary;
+  font-weight: 500;
+}
+
+.tagItemNeg {
+  background: $color-bg-gray;
+  color: $color-text-secondary;
+}
+
+.tagItemNegActive {
+  background: linear-gradient(135deg, #FEF2F2 0%, #FEE2E2 100%);
+  color: $color-error;
+  border-color: $color-error;
+  font-weight: 500;
+}
+
+.textareaGroup {
+  margin-bottom: $spacing-lg;
+}
+
+.textarea {
+  width: 100%;
+  min-height: 220rpx;
+  padding: $spacing-md;
+  background: $color-bg-gray;
+  border-radius: $radius-md;
+  font-size: 26rpx;
+  color: $color-text-primary;
+  line-height: 1.6;
+  box-sizing: border-box;
+}
+
+.textareaCount {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12rpx;
+}
+
+.countText {
+  font-size: 22rpx;
+  color: $color-text-tertiary;
+}
+
+.quickPhrases {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-top: 12rpx;
+}
+
+.phraseBtn {
+  padding: 10rpx 20rpx;
+  background: $color-accent-bg;
+  color: $color-accent;
+  border-radius: $radius-sm;
+  font-size: 22rpx;
+  font-weight: 500;
+}
+
+.uploadSection {
+  padding-top: $spacing-md;
+  margin-top: $spacing-md;
+  border-top: 1rpx solid $color-border-light;
+}
+
+.uploadLabel {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  font-size: 26rpx;
+  font-weight: 600;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+}
+
+.uploadLabelNote {
+  font-size: 22rpx;
+  color: $color-text-tertiary;
+  font-weight: 400;
+}
+
+.uploadArea {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12rpx;
+}
+
+.uploadItem {
+  aspect-ratio: 1;
+  border-radius: $radius-md;
+  overflow: hidden;
+}
+
+.uploadImg {
+  width: 100%;
+  height: 100%;
+}
+
+.uploadBtn {
+  aspect-ratio: 1;
+  border-radius: $radius-md;
+  background: $color-bg-gray;
+  border: 2rpx dashed $color-border;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: $color-text-tertiary;
+}
+
+.uploadBtnIcon {
+  font-size: 40rpx;
+  margin-bottom: 4rpx;
+}
+
+.uploadBtnText {
+  font-size: 20rpx;
+}
+
+.sellerSection {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-md;
+  background: $color-bg-gray;
+  border-radius: $radius-md;
+}
+
+.sellerInfo {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+}
+
+.sellerAvatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, $color-primary 0%, #059669 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36rpx;
+  color: #fff;
+}
+
+.sellerDetail {
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}
+
+.sellerName {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: $color-text-primary;
+}
+
+.verifiedBadge {
+  padding: 2rpx 10rpx;
+  background: $color-primary-bg;
+  color: $color-primary;
+  border-radius: 6rpx;
+  font-size: 18rpx;
+  font-weight: 500;
+}
+
+.sellerStats {
+  font-size: 22rpx;
+  color: $color-text-tertiary;
+}
+
+.blacklistBtn {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  padding: 12rpx 20rpx;
+  background: #fff;
+  border: 2rpx solid $color-border;
+  border-radius: $radius-md;
+  font-size: 22rpx;
+  color: $color-text-secondary;
+}
+
+.blacklistBtnActive {
+  background: $color-error;
+  border-color: $color-error;
+  color: #fff;
+}
+
+.noticeList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.noticeItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 12rpx;
+  padding: $spacing-sm $spacing-md;
+  background: $color-primary-bg;
+  border-radius: $radius-md;
+  font-size: 24rpx;
+  color: $color-text-secondary;
+  line-height: 1.5;
+}
+
+.noticeIcon {
+  flex-shrink: 0;
+  font-size: 26rpx;
+}
+
+.footerBar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: $spacing-md $spacing-lg;
+  padding-bottom: calc(#{$spacing-md} + env(safe-area-inset-bottom));
+  background: #fff;
+  box-shadow: 0 -4rpx 20rpx rgba(0, 0, 0, 0.06);
+}
+
+.footerTip {
+  text-align: center;
+  font-size: 22rpx;
+  color: $color-text-tertiary;
+  margin-bottom: 12rpx;
+}
+
+.submitBtn {
+  @include button-reset;
+  width: 100%;
+  height: 96rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, $color-primary 0%, #059669 100%);
+  border-radius: $radius-pill;
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #fff;
+  box-shadow: $shadow-md;
+}
+
+.submitBtnDisabled {
+  background: $color-border;
+  color: $color-text-tertiary;
+  box-shadow: none;
+}

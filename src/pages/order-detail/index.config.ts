@@ -1,0 +1,6 @@
+export default definePageConfig({
+  navigationBarTitleText: '交易详情',
+  navigationBarBackgroundColor: '#FFFFFF',
+  navigationBarTextStyle: 'black',
+  backgroundColor: '#F5F7FA',
+})

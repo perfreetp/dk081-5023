@@ -1,0 +1,581 @@
+@import '../../styles/variables.scss';
+
+.page {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding-bottom: 200rpx;
+}
+
+.statusHeader {
+  position: relative;
+  padding: 48rpx $spacing-lg;
+  background: linear-gradient(135deg, $color-primary 0%, #059669 100%);
+  color: #fff;
+}
+
+.statusRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16rpx;
+}
+
+.statusTitle {
+  font-size: 36rpx;
+  font-weight: 700;
+}
+
+.statusBadge {
+  padding: 8rpx 20rpx;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: $radius-md;
+  font-size: 24rpx;
+}
+
+.statusDesc {
+  font-size: 26rpx;
+  opacity: 0.9;
+  margin-bottom: 24rpx;
+  line-height: 1.5;
+}
+
+.countdownCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx $spacing-md;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: $radius-md;
+  backdrop-filter: blur(10px);
+}
+
+.countdownLabel {
+  font-size: 24rpx;
+  opacity: 0.9;
+}
+
+.countdownTime {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  font-size: 30rpx;
+  font-weight: 700;
+  font-family: monospace;
+}
+
+.timeBlock {
+  min-width: 52rpx;
+  text-align: center;
+  padding: 6rpx 10rpx;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: $radius-sm;
+}
+
+.timeSep {
+  opacity: 0.8;
+}
+
+.section {
+  margin: $spacing-lg;
+  padding: $spacing-lg;
+  background: #fff;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+}
+
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-lg;
+  padding-bottom: $spacing-md;
+  border-bottom: 1rpx solid $color-border-light;
+}
+
+.sectionTitleText {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: $color-text-primary;
+}
+
+.sectionAction {
+  font-size: 24rpx;
+  color: $color-primary;
+}
+
+.progressSteps {
+  padding: $spacing-md 0;
+}
+
+.stepItem {
+  display: flex;
+  gap: $spacing-md;
+  padding-bottom: $spacing-lg;
+  position: relative;
+}
+
+.stepItem:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 20rpx;
+  top: 56rpx;
+  bottom: 8rpx;
+  width: 4rpx;
+  background: $color-border-light;
+}
+
+.stepDone:not(:last-child)::after {
+  background: $color-primary;
+}
+
+.stepCircle {
+  flex-shrink: 0;
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22rpx;
+  font-weight: 600;
+  z-index: 1;
+}
+
+.stepDone .stepCircle {
+  background: $color-primary;
+  color: #fff;
+}
+
+.stepCurrent .stepCircle {
+  background: #fff;
+  border: 4rpx solid $color-primary;
+  color: $color-primary;
+  box-shadow: 0 0 0 8rpx rgba(16, 185, 129, 0.15);
+}
+
+.stepPending .stepCircle {
+  background: #fff;
+  border: 2rpx solid $color-border;
+  color: $color-text-tertiary;
+}
+
+.stepContent {
+  flex: 1;
+  min-width: 0;
+  padding-top: 4rpx;
+}
+
+.stepTitle {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: $color-text-primary;
+  margin-bottom: 6rpx;
+}
+
+.stepCurrent .stepTitle {
+  color: $color-primary;
+}
+
+.stepPending .stepTitle {
+  color: $color-text-tertiary;
+}
+
+.stepDesc {
+  font-size: 24rpx;
+  color: $color-text-secondary;
+  line-height: 1.5;
+  margin-bottom: 8rpx;
+}
+
+.stepPending .stepDesc {
+  color: $color-text-tertiary;
+}
+
+.stepTime {
+  font-size: 22rpx;
+  color: $color-text-tertiary;
+}
+
+.accountCard {
+  display: flex;
+  gap: $spacing-md;
+}
+
+.accountCover {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: $radius-md;
+  flex-shrink: 0;
+}
+
+.accountInfo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.accountTitle {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: $color-text-primary;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.accountMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+
+.accountMetaItem {
+  font-size: 22rpx;
+  color: $color-text-tertiary;
+}
+
+.accountMetaItem strong {
+  color: $color-text-secondary;
+  font-weight: 500;
+}
+
+.accountPrice {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: $color-error;
+}
+
+.verifySection {
+  background: linear-gradient(135deg, $color-primary-bg 0%, #ECFDF5 100%);
+  border: 2rpx solid rgba(16, 185, 129, 0.2);
+}
+
+.verifySummary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: $spacing-sm;
+  margin-bottom: $spacing-lg;
+}
+
+.verifyStat {
+  text-align: center;
+  padding: $spacing-sm;
+  background: #fff;
+  border-radius: $radius-md;
+}
+
+.verifyStatValue {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: $color-primary;
+  margin-bottom: 4rpx;
+}
+
+.verifyStatLabel {
+  font-size: 20rpx;
+  color: $color-text-tertiary;
+}
+
+.verifyRecordList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.verifyRecord {
+  display: flex;
+  gap: $spacing-md;
+  padding: $spacing-md;
+  background: #fff;
+  border-radius: $radius-md;
+}
+
+.recordThumb {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: $radius-sm;
+  flex-shrink: 0;
+  background: $color-bg-gray;
+}
+
+.recordInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.recordTitle {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: $color-text-primary;
+  margin-bottom: 6rpx;
+}
+
+.recordResult {
+  display: inline-flex;
+  align-items: center;
+  gap: 6rpx;
+  padding: 4rpx 12rpx;
+  border-radius: $radius-sm;
+  font-size: 20rpx;
+  font-weight: 500;
+  margin-bottom: 6rpx;
+}
+
+.recordPass {
+  background: $color-primary-bg;
+  color: $color-primary;
+}
+
+.recordWarn {
+  background: $color-warning-bg;
+  color: $color-warning;
+}
+
+.recordTime {
+  font-size: 22rpx;
+  color: $color-text-tertiary;
+}
+
+.bindingSteps {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.bindingItem {
+  display: flex;
+  gap: $spacing-md;
+  padding: $spacing-md;
+  background: $color-bg-gray;
+  border-radius: $radius-md;
+}
+
+.bindingStep {
+  flex-shrink: 0;
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, $color-primary 0%, #059669 100%);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  font-weight: 700;
+}
+
+.bindingContent {
+  flex: 1;
+}
+
+.bindingTitle {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: $color-text-primary;
+  margin-bottom: 8rpx;
+}
+
+.bindingDesc {
+  font-size: 24rpx;
+  color: $color-text-secondary;
+  line-height: 1.6;
+}
+
+.bindingTips {
+  margin-top: 12rpx;
+  padding: $spacing-sm $spacing-md;
+  background: $color-warning-bg;
+  border-radius: $radius-sm;
+  font-size: 22rpx;
+  color: $color-warning;
+  line-height: 1.5;
+}
+
+.riskCard {
+  background: linear-gradient(135deg, #FEF2F2 0%, #FEE2E2 100%);
+  border: 2rpx solid rgba(239, 68, 68, 0.2);
+}
+
+.riskHeader {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: $spacing-md;
+  padding: $spacing-md;
+  background: rgba(239, 68, 68, 0.1);
+  border-radius: $radius-md;
+}
+
+.riskIcon {
+  font-size: 36rpx;
+}
+
+.riskTitle {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: $color-error;
+}
+
+.riskCountdown {
+  margin-left: auto;
+  font-size: 24rpx;
+  font-weight: 600;
+  color: $color-error;
+  font-family: monospace;
+}
+
+.riskTipList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.riskTip {
+  display: flex;
+  align-items: flex-start;
+  gap: 12rpx;
+  padding: $spacing-sm $spacing-md;
+  background: #fff;
+  border-radius: $radius-md;
+  font-size: 24rpx;
+  color: $color-text-secondary;
+  line-height: 1.5;
+}
+
+.riskTipIcon {
+  flex-shrink: 0;
+  font-size: 24rpx;
+}
+
+.infoGrid {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.infoRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-sm 0;
+  font-size: 26rpx;
+}
+
+.infoLabel {
+  color: $color-text-tertiary;
+  flex-shrink: 0;
+}
+
+.infoValue {
+  color: $color-text-primary;
+  text-align: right;
+  max-width: 60%;
+  word-break: break-all;
+}
+
+.infoValueHighlight {
+  color: $color-primary;
+  font-weight: 600;
+}
+
+.infoValuePrice {
+  color: $color-error;
+  font-weight: 700;
+  font-size: 30rpx;
+}
+
+.divider {
+  height: 1rpx;
+  background: $color-border-light;
+  margin: $spacing-sm 0;
+}
+
+.footerBar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  padding: $spacing-md $spacing-lg;
+  padding-bottom: calc(#{$spacing-md} + env(safe-area-inset-bottom));
+  background: #fff;
+  box-shadow: 0 -4rpx 20rpx rgba(0, 0, 0, 0.06);
+}
+
+.footerBtnLeft {
+  flex: 1;
+  display: flex;
+  gap: 16rpx;
+}
+
+.footerBtnRight {
+  flex: 2;
+  display: flex;
+  gap: 16rpx;
+}
+
+.secondaryBtn {
+  @include button-reset;
+  flex: 1;
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2rpx solid $color-border;
+  border-radius: $radius-pill;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: $color-text-secondary;
+  background: #fff;
+}
+
+.dangerBtn {
+  @include button-reset;
+  flex: 1;
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2rpx solid $color-error;
+  border-radius: $radius-pill;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: $color-error;
+  background: #fff;
+}
+
+.primaryBtn {
+  @include button-reset;
+  flex: 1;
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, $color-primary 0%, #059669 100%);
+  border-radius: $radius-pill;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #fff;
+  box-shadow: $shadow-md;
+}
+
+.warnBtn {
+  @include button-reset;
+  flex: 1;
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, $color-warning 0%, #D97706 100%);
+  border-radius: $radius-pill;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #fff;
+  box-shadow: $shadow-md;
+}

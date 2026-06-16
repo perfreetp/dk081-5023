@@ -1,0 +1,451 @@
+@import '../../styles/variables.scss';
+
+.page {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding-bottom: 180rpx;
+}
+
+.coverSection {
+  position: relative;
+  width: 100%;
+  height: 500rpx;
+  background: #000;
+}
+
+.coverImage {
+  width: 100%;
+  height: 100%;
+}
+
+.verifyBadge {
+  position: absolute;
+  top: 24rpx;
+  left: 24rpx;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 12rpx 20rpx;
+  background: linear-gradient(135deg, $color-primary 0%, #059669 100%);
+  border-radius: $radius-md;
+  color: #fff;
+  font-size: 24rpx;
+  font-weight: 600;
+}
+
+.imageCount {
+  position: absolute;
+  bottom: 24rpx;
+  right: 24rpx;
+  padding: 8rpx 16rpx;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: $radius-sm;
+  color: #fff;
+  font-size: 22rpx;
+}
+
+.infoCard {
+  margin: $spacing-lg;
+  padding: $spacing-lg;
+  background: #fff;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+}
+
+.priceRow {
+  display: flex;
+  align-items: baseline;
+  gap: 16rpx;
+  margin-bottom: $spacing-md;
+}
+
+.currentPrice {
+  font-size: 56rpx;
+  font-weight: 700;
+  color: $color-error;
+}
+
+.originalPrice {
+  font-size: 28rpx;
+  color: $color-text-tertiary;
+  text-decoration: line-through;
+}
+
+.priceTag {
+  padding: 6rpx 16rpx;
+  border-radius: $radius-sm;
+  font-size: 22rpx;
+  font-weight: 500;
+}
+
+.negotiable {
+  background: $color-warning-bg;
+  color: $color-warning;
+}
+
+.fixed {
+  background: $color-primary-bg;
+  color: $color-primary;
+}
+
+.titleRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: $spacing-md;
+  margin-bottom: $spacing-md;
+}
+
+.title {
+  flex: 1;
+  font-size: 32rpx;
+  font-weight: 600;
+  color: $color-text-primary;
+  line-height: 1.5;
+}
+
+.gameTag {
+  flex-shrink: 0;
+  padding: 6rpx 16rpx;
+  background: $color-accent-bg;
+  color: $color-accent;
+  border-radius: $radius-sm;
+  font-size: 22rpx;
+  font-weight: 500;
+}
+
+.metaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24rpx;
+  padding: $spacing-md 0;
+  border-top: 1rpx solid $color-border-light;
+  border-bottom: 1rpx solid $color-border-light;
+  margin-bottom: $spacing-md;
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  font-size: 26rpx;
+  color: $color-text-secondary;
+}
+
+.metaValue {
+  color: $color-text-primary;
+  font-weight: 500;
+}
+
+.tagList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+
+.tag {
+  padding: 8rpx 20rpx;
+  background: $color-bg-gray;
+  border-radius: $radius-md;
+  font-size: 24rpx;
+  color: $color-text-secondary;
+}
+
+.tagRank {
+  background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+  color: #B45309;
+  font-weight: 500;
+}
+
+.tagSkin {
+  background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%);
+  color: #1E40AF;
+  font-weight: 500;
+}
+
+.tagEquip {
+  background: linear-gradient(135deg, #FCE7F3 0%, #FBCFE8 100%);
+  color: #9D174D;
+  font-weight: 500;
+}
+
+.section {
+  margin: $spacing-lg;
+  padding: $spacing-lg;
+  background: #fff;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+}
+
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-lg;
+  padding-bottom: $spacing-md;
+  border-bottom: 1rpx solid $color-border-light;
+}
+
+.sectionTitleText {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: $color-text-primary;
+}
+
+.sectionAction {
+  font-size: 24rpx;
+  color: $color-primary;
+}
+
+.guaranteeList {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: $spacing-md;
+}
+
+.guaranteeItem {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  padding: $spacing-md;
+  background: $color-primary-bg;
+  border-radius: $radius-md;
+}
+
+.guaranteeIcon {
+  font-size: 32rpx;
+}
+
+.guaranteeText {
+  font-size: 24rpx;
+  color: $color-text-secondary;
+  line-height: 1.4;
+}
+
+.guaranteeText strong {
+  display: block;
+  color: $color-text-primary;
+  font-weight: 600;
+  margin-bottom: 4rpx;
+}
+
+.sellerCard {
+  display: flex;
+  gap: $spacing-md;
+}
+
+.sellerAvatar {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, $color-primary 0%, #059669 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40rpx;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.sellerInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.sellerNameRow {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: 8rpx;
+}
+
+.sellerName {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: $color-text-primary;
+}
+
+.verifiedBadge {
+  padding: 4rpx 12rpx;
+  background: $color-primary-bg;
+  color: $color-primary;
+  border-radius: $radius-sm;
+  font-size: 20rpx;
+  font-weight: 500;
+}
+
+.creditLevel {
+  display: inline-flex;
+  align-items: center;
+  padding: 4rpx 12rpx;
+  border-radius: $radius-sm;
+  font-size: 20rpx;
+  font-weight: 500;
+}
+
+.creditExcellent {
+  background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+  color: #065F46;
+}
+
+.creditGood {
+  background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%);
+  color: #1E40AF;
+}
+
+.sellerStats {
+  display: flex;
+  gap: 32rpx;
+  margin-top: 12rpx;
+}
+
+.sellerStat {
+  font-size: 24rpx;
+  color: $color-text-secondary;
+}
+
+.sellerStat strong {
+  color: $color-text-primary;
+  font-weight: 600;
+}
+
+.reportSummary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $spacing-md;
+  margin-bottom: $spacing-lg;
+}
+
+.reportItem {
+  text-align: center;
+  padding: $spacing-md;
+  background: $color-bg-gray;
+  border-radius: $radius-md;
+}
+
+.reportValue {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: $color-primary;
+  margin-bottom: 4rpx;
+}
+
+.reportLabel {
+  font-size: 22rpx;
+  color: $color-text-tertiary;
+}
+
+.reportList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.reportCheck {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-md;
+  background: $color-bg-gray;
+  border-radius: $radius-md;
+}
+
+.reportCheckLeft {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  font-size: 26rpx;
+  color: $color-text-primary;
+}
+
+.pass {
+  color: $color-primary;
+  font-weight: 500;
+}
+
+.description {
+  font-size: 26rpx;
+  color: $color-text-secondary;
+  line-height: 1.8;
+}
+
+.imageGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12rpx;
+}
+
+.gridImage {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: $radius-md;
+  background: $color-bg-gray;
+}
+
+.footerBar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  padding: $spacing-md $spacing-lg;
+  padding-bottom: calc(#{$spacing-md} + env(safe-area-inset-bottom));
+  background: #fff;
+  box-shadow: 0 -4rpx 20rpx rgba(0, 0, 0, 0.06);
+}
+
+.footerIconBtn {
+  @include button-reset;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4rpx;
+  padding: 8rpx 16rpx;
+}
+
+.footerIcon {
+  font-size: 36rpx;
+}
+
+.footerIconText {
+  font-size: 20rpx;
+  color: $color-text-tertiary;
+}
+
+.footerBtns {
+  flex: 1;
+  display: flex;
+  gap: 16rpx;
+}
+
+.secondaryBtn {
+  @include button-reset;
+  flex: 1;
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2rpx solid $color-primary;
+  border-radius: $radius-pill;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: $color-primary;
+  background: #fff;
+}
+
+.primaryBtn {
+  @include button-reset;
+  flex: 1;
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, $color-primary 0%, #059669 100%);
+  border-radius: $radius-pill;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #fff;
+  box-shadow: $shadow-md;
+}

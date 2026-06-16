@@ -1,0 +1,94 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  padding: $spacing-lg 0;
+}
+
+.stepsRow {
+  display: flex;
+  align-items: flex-start;
+  position: relative;
+}
+
+.stepItem {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  min-width: 0;
+}
+
+.circle {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: $radius-round;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26rpx;
+  font-weight: $font-weight-semibold;
+  z-index: 2;
+  flex-shrink: 0;
+  background: $color-bg-tag;
+  color: $color-text-tertiary;
+  border: 4rpx solid $color-border;
+  &.done {
+    background: $color-primary;
+    color: $color-text-white;
+    border-color: $color-primary;
+  }
+  &.current {
+    background: $color-primary;
+    color: $color-text-white;
+    border-color: $color-primary-light;
+    box-shadow: 0 0 0 8rpx rgba(16, 185, 129, 0.15);
+  }
+}
+
+.line {
+  position: absolute;
+  top: 28rpx;
+  left: 50%;
+  width: 100%;
+  height: 4rpx;
+  background: $color-border;
+  z-index: 1;
+  &.done {
+    background: $color-primary;
+  }
+}
+
+.stepContent {
+  margin-top: $spacing-sm;
+  text-align: center;
+  padding: 0 8rpx;
+}
+
+.stepTitle {
+  font-size: 24rpx;
+  font-weight: $font-weight-medium;
+  color: $color-text-tertiary;
+  white-space: nowrap;
+  &.done, &.current {
+    color: $color-text-primary;
+  }
+  &.current {
+    color: $color-primary;
+    font-weight: $font-weight-semibold;
+  }
+}
+
+.stepDesc {
+  font-size: 20rpx;
+  color: $color-text-tertiary;
+  margin-top: 4rpx;
+  line-height: 1.4;
+}
+
+.stepTime {
+  font-size: 20rpx;
+  color: $color-text-tertiary;
+  margin-top: 4rpx;
+  @include text-ellipsis;
+}

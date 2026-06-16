@@ -1,0 +1,569 @@
+@import '../../styles/variables.scss';
+
+.page {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding-bottom: 160rpx;
+}
+
+.headerBanner {
+  margin: $spacing-lg;
+  padding: $spacing-lg;
+  background: linear-gradient(135deg, #FEF2F2 0%, #FEE2E2 100%);
+  border: 2rpx solid rgba(239, 68, 68, 0.2);
+  border-radius: $radius-lg;
+}
+
+.bannerTitle {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: 12rpx;
+}
+
+.bannerIcon {
+  font-size: 36rpx;
+}
+
+.bannerTitleText {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: $color-error;
+}
+
+.bannerDesc {
+  font-size: 24rpx;
+  color: $color-text-secondary;
+  line-height: 1.6;
+}
+
+.bannerDesc strong {
+  color: $color-error;
+  font-weight: 600;
+}
+
+.tabs {
+  display: flex;
+  margin: 0 $spacing-lg;
+  margin-bottom: $spacing-lg;
+  padding: 6rpx;
+  background: #fff;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+}
+
+.tabItem {
+  flex: 1;
+  height: 72rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: $radius-md;
+  font-size: 26rpx;
+  color: $color-text-secondary;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.tabActive {
+  background: linear-gradient(135deg, $color-primary 0%, #059669 100%);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: $shadow-sm;
+}
+
+.section {
+  margin: $spacing-lg;
+  padding: $spacing-lg;
+  background: #fff;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+}
+
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: $spacing-lg;
+  padding-bottom: $spacing-md;
+  border-bottom: 1rpx solid $color-border-light;
+}
+
+.sectionTitleIcon {
+  font-size: 32rpx;
+}
+
+.sectionTitleText {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: $color-text-primary;
+}
+
+.typeList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.typeCard {
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-md;
+  padding: $spacing-md;
+  background: $color-bg-gray;
+  border-radius: $radius-md;
+  border: 3rpx solid transparent;
+  transition: all 0.2s;
+}
+
+.typeCardActive {
+  background: $color-primary-bg;
+  border-color: $color-primary;
+}
+
+.typeIcon {
+  flex-shrink: 0;
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: $radius-md;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36rpx;
+}
+
+.typeCardActive .typeIcon {
+  background: $color-primary;
+}
+
+.typeInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.typeTitle {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: $color-text-primary;
+  margin-bottom: 6rpx;
+}
+
+.typeDesc {
+  font-size: 24rpx;
+  color: $color-text-secondary;
+  line-height: 1.5;
+}
+
+.typeCheck {
+  flex-shrink: 0;
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 50%;
+  border: 3rpx solid $color-border;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  color: transparent;
+}
+
+.typeCardActive .typeCheck {
+  background: $color-primary;
+  border-color: $color-primary;
+  color: #fff;
+}
+
+.orderSelect {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-md;
+  background: $color-bg-gray;
+  border-radius: $radius-md;
+}
+
+.orderInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.orderLabel {
+  font-size: 24rpx;
+  color: $color-text-tertiary;
+  margin-bottom: 6rpx;
+}
+
+.orderValue {
+  font-size: 26rpx;
+  color: $color-text-primary;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.orderAction {
+  flex-shrink: 0;
+  margin-left: $spacing-md;
+  font-size: 24rpx;
+  color: $color-primary;
+}
+
+.formGroup {
+  margin-bottom: $spacing-lg;
+}
+
+.formLabel {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  font-size: 26rpx;
+  font-weight: 600;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+}
+
+.formRequired {
+  color: $color-error;
+  font-weight: 700;
+}
+
+.textarea {
+  width: 100%;
+  min-height: 200rpx;
+  padding: $spacing-md;
+  background: $color-bg-gray;
+  border-radius: $radius-md;
+  font-size: 26rpx;
+  color: $color-text-primary;
+  line-height: 1.6;
+  box-sizing: border-box;
+}
+
+.textareaCount {
+  text-align: right;
+  font-size: 22rpx;
+  color: $color-text-tertiary;
+  margin-top: 8rpx;
+}
+
+.uploadArea {
+  padding: $spacing-lg;
+  background: $color-bg-gray;
+  border-radius: $radius-md;
+  border: 2rpx dashed $color-border;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200rpx;
+}
+
+.uploadIcon {
+  font-size: 48rpx;
+  margin-bottom: 12rpx;
+}
+
+.uploadText {
+  font-size: 26rpx;
+  color: $color-text-secondary;
+  margin-bottom: 6rpx;
+}
+
+.uploadHint {
+  font-size: 22rpx;
+  color: $color-text-tertiary;
+}
+
+.uploadedList {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12rpx;
+  margin-top: $spacing-md;
+}
+
+.uploadedItem {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: $radius-md;
+  background: $color-bg-gray;
+  overflow: hidden;
+}
+
+.uploadedImg {
+  width: 100%;
+  height: 100%;
+}
+
+.uploadedDelete {
+  position: absolute;
+  top: 6rpx;
+  right: 6rpx;
+  width: 36rpx;
+  height: 36rpx;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tipList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.tipItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 12rpx;
+  padding: $spacing-md;
+  background: $color-bg-gray;
+  border-radius: $radius-md;
+  font-size: 24rpx;
+  color: $color-text-secondary;
+  line-height: 1.6;
+}
+
+.tipIcon {
+  flex-shrink: 0;
+  font-size: 28rpx;
+}
+
+.progressCard {
+  background: linear-gradient(135deg, $color-primary-bg 0%, #ECFDF5 100%);
+  border: 2rpx solid rgba(16, 185, 129, 0.2);
+}
+
+.progressHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-md;
+  background: rgba(16, 185, 129, 0.1);
+  border-radius: $radius-md;
+  margin-bottom: $spacing-lg;
+}
+
+.progressStatus {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.progressIcon {
+  font-size: 32rpx;
+}
+
+.progressStatusText {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: $color-primary;
+}
+
+.progressTime {
+  font-size: 22rpx;
+  color: $color-text-secondary;
+}
+
+.progressSteps {
+  position: relative;
+  padding-left: 20rpx;
+}
+
+.progressStepItem {
+  display: flex;
+  gap: $spacing-md;
+  padding-bottom: $spacing-lg;
+  position: relative;
+}
+
+.progressStepItem:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  left: 18rpx;
+  top: 48rpx;
+  bottom: 12rpx;
+  width: 4rpx;
+  background: $color-border-light;
+}
+
+.progressStepItem.progressStepDone:not(:last-child)::before {
+  background: $color-primary;
+}
+
+.progressStepCircle {
+  flex-shrink: 0;
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 50%;
+  background: #fff;
+  border: 3rpx solid $color-border;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20rpx;
+  font-weight: 600;
+  z-index: 1;
+}
+
+.progressStepDone .progressStepCircle {
+  background: $color-primary;
+  border-color: $color-primary;
+  color: #fff;
+}
+
+.progressStepCurrent .progressStepCircle {
+  background: #fff;
+  border-color: $color-primary;
+  color: $color-primary;
+  box-shadow: 0 0 0 8rpx rgba(16, 185, 129, 0.15);
+}
+
+.progressStepContent {
+  flex: 1;
+  padding-top: 4rpx;
+}
+
+.progressStepTitle {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: $color-text-primary;
+  margin-bottom: 6rpx;
+}
+
+.progressStepCurrent .progressStepTitle {
+  color: $color-primary;
+}
+
+.progressStepDone .progressStepTitle {
+  color: $color-text-secondary;
+}
+
+.progressStepDesc {
+  font-size: 24rpx;
+  color: $color-text-secondary;
+  line-height: 1.5;
+  margin-bottom: 4rpx;
+}
+
+.progressStepTime {
+  font-size: 22rpx;
+  color: $color-text-tertiary;
+}
+
+.resultCard {
+  text-align: center;
+  padding: $spacing-lg;
+  background: linear-gradient(135deg, $color-primary-bg 0%, #ECFDF5 100%);
+  border-radius: $radius-lg;
+  border: 2rpx solid rgba(16, 185, 129, 0.2);
+}
+
+.resultIcon {
+  font-size: 80rpx;
+  margin-bottom: $spacing-md;
+}
+
+.resultTitle {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: $color-primary;
+  margin-bottom: 12rpx;
+}
+
+.resultDesc {
+  font-size: 26rpx;
+  color: $color-text-secondary;
+  line-height: 1.6;
+}
+
+.resultAmount {
+  margin-top: $spacing-lg;
+  padding: $spacing-lg;
+  background: #fff;
+  border-radius: $radius-md;
+}
+
+.resultAmountLabel {
+  font-size: 24rpx;
+  color: $color-text-tertiary;
+  margin-bottom: 8rpx;
+}
+
+.resultAmountValue {
+  font-size: 48rpx;
+  font-weight: 700;
+  color: $color-primary;
+}
+
+.footerBar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: $spacing-md $spacing-lg;
+  padding-bottom: calc(#{$spacing-md} + env(safe-area-inset-bottom));
+  background: #fff;
+  box-shadow: 0 -4rpx 20rpx rgba(0, 0, 0, 0.06);
+}
+
+.submitBtn {
+  @include button-reset;
+  width: 100%;
+  height: 96rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, $color-primary 0%, #059669 100%);
+  border-radius: $radius-pill;
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #fff;
+  box-shadow: $shadow-md;
+}
+
+.submitBtnDisabled {
+  background: $color-border;
+  color: $color-text-tertiary;
+  box-shadow: none;
+}
+
+.footerBtns {
+  display: flex;
+  gap: 16rpx;
+}
+
+.secondaryBtn {
+  @include button-reset;
+  flex: 1;
+  height: 96rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2rpx solid $color-border;
+  border-radius: $radius-pill;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: $color-text-secondary;
+  background: #fff;
+}
+
+.primaryBtn {
+  @include button-reset;
+  flex: 1;
+  height: 96rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, $color-primary 0%, #059669 100%);
+  border-radius: $radius-pill;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #fff;
+  box-shadow: $shadow-md;
+}

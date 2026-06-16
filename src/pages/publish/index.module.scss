@@ -1,0 +1,453 @@
+@use '@/styles/variables.scss' as *;
+
+.page {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding-bottom: 160rpx;
+}
+
+.content {
+  padding: $spacing-md $page-padding;
+}
+
+.noticeCard {
+  background: linear-gradient(135deg, $color-primary-bg 0%, rgba(59, 130, 246, 0.08) 100%);
+  border-radius: $radius-lg;
+  padding: $spacing-md;
+  margin-bottom: $spacing-md;
+  border: 2rpx solid $color-primary;
+}
+
+.noticeTitle {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-primary;
+  margin-bottom: $spacing-sm;
+}
+
+.noticeList {
+  padding-left: $spacing-md;
+}
+
+.noticeItem {
+  font-size: 24rpx;
+  color: $color-text-secondary;
+  line-height: 1.8;
+}
+
+.section {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-md;
+  margin-bottom: $spacing-md;
+  box-shadow: $shadow-card;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  margin-bottom: $spacing-md;
+  padding-bottom: $spacing-sm;
+  border-bottom: 2rpx solid $color-divider;
+}
+
+.sectionIcon {
+  font-size: 32rpx;
+}
+
+.sectionTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.required {
+  color: $color-error;
+  margin-left: 4rpx;
+}
+
+.fieldRow {
+  margin-bottom: $spacing-md;
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.fieldLabel {
+  font-size: 26rpx;
+  color: $color-text-secondary;
+  margin-bottom: $spacing-sm;
+  display: flex;
+  align-items: center;
+}
+
+.selectBox {
+  background: $color-bg-page;
+  border-radius: $radius-md;
+  padding: $spacing-md;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: all $transition-base;
+  &:active {
+    background: $color-bg-hover;
+  }
+}
+
+.selectValue {
+  font-size: 28rpx;
+  color: $color-text-primary;
+  &.placeholder {
+    color: $color-text-tertiary;
+  }
+}
+
+.arrow {
+  color: $color-text-tertiary;
+  font-size: 24rpx;
+}
+
+.inputBox {
+  background: $color-bg-page;
+  border-radius: $radius-md;
+  padding: 0 $spacing-md;
+  min-height: 88rpx;
+  display: flex;
+  align-items: center;
+}
+
+.input {
+  flex: 1;
+  font-size: 28rpx;
+  color: $color-text-primary;
+  height: 88rpx;
+}
+
+.textareaBox {
+  background: $color-bg-page;
+  border-radius: $radius-md;
+  padding: $spacing-md;
+}
+
+.textarea {
+  width: 100%;
+  font-size: 28rpx;
+  color: $color-text-primary;
+  min-height: 200rpx;
+  line-height: 1.6;
+}
+
+.textCount {
+  text-align: right;
+  font-size: 22rpx;
+  color: $color-text-tertiary;
+  margin-top: $spacing-xs;
+}
+
+.tagSelectRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-xs;
+}
+
+.tagOption {
+  padding: 10rpx 24rpx;
+  background: $color-bg-page;
+  color: $color-text-secondary;
+  font-size: 24rpx;
+  border-radius: $radius-round;
+  border: 2rpx solid transparent;
+  transition: all $transition-base;
+  &.active {
+    background: $color-primary-bg;
+    color: $color-primary;
+    border-color: $color-primary;
+    font-weight: $font-weight-medium;
+  }
+  &:active {
+    opacity: 0.8;
+  }
+}
+
+.priceTypeToggle {
+  display: flex;
+  background: $color-bg-page;
+  border-radius: $radius-md;
+  padding: 6rpx;
+}
+
+.toggleOption {
+  flex: 1;
+  text-align: center;
+  padding: $spacing-md 0;
+  border-radius: 10rpx;
+  font-size: 28rpx;
+  color: $color-text-secondary;
+  transition: all $transition-base;
+  &.active {
+    background: $color-primary;
+    color: $color-text-white;
+    font-weight: $font-weight-medium;
+    box-shadow: 0 4rpx 12rpx rgba(16, 185, 129, 0.3);
+  }
+}
+
+.priceRow {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+}
+
+.priceInputBox {
+  flex: 1;
+  background: $color-bg-page;
+  border-radius: $radius-md;
+  padding: 0 $spacing-md;
+  display: flex;
+  align-items: center;
+}
+
+.pricePrefix {
+  font-size: 36rpx;
+  color: $color-price;
+  font-weight: $font-weight-bold;
+  margin-right: $spacing-xs;
+}
+
+.priceInput {
+  flex: 1;
+  font-size: 36rpx;
+  color: $color-price;
+  font-weight: $font-weight-bold;
+  height: 96rpx;
+}
+
+.priceSuffix {
+  font-size: 26rpx;
+  color: $color-text-tertiary;
+}
+
+.uploadGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: $spacing-sm;
+}
+
+.uploadItem {
+  aspect-ratio: 1;
+  border-radius: $radius-md;
+  overflow: hidden;
+  position: relative;
+}
+
+.uploadImage {
+  width: 100%;
+  height: 100%;
+}
+
+.uploadDelete {
+  position: absolute;
+  top: 4rpx;
+  right: 4rpx;
+  width: 40rpx;
+  height: 40rpx;
+  background: rgba(0, 0, 0, 0.5);
+  color: $color-text-white;
+  border-radius: $radius-round;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+}
+
+.uploadAdd {
+  aspect-ratio: 1;
+  background: $color-bg-page;
+  border: 2rpx dashed $color-border;
+  border-radius: $radius-md;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  transition: all $transition-base;
+  &:active {
+    opacity: 0.7;
+  }
+}
+
+.uploadAddIcon {
+  font-size: 48rpx;
+  color: $color-text-tertiary;
+}
+
+.uploadAddText {
+  font-size: 22rpx;
+  color: $color-text-tertiary;
+}
+
+.imageTip {
+  font-size: 22rpx;
+  color: $color-text-tertiary;
+  margin-top: $spacing-sm;
+}
+
+.verifyStatusCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-md;
+  border-radius: $radius-md;
+  background: $color-bg-page;
+}
+
+.verifyLeft {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+}
+
+.verifyIcon {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: $radius-round;
+  background: $color-primary-bg;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40rpx;
+  &.unverified {
+    background: $color-warning-bg;
+  }
+}
+
+.verifyInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.verifyTitle {
+  font-size: 28rpx;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+}
+
+.verifyDesc {
+  font-size: 22rpx;
+  color: $color-text-tertiary;
+}
+
+.verifyBtn {
+  @include button-reset;
+  padding: 12rpx 28rpx;
+  background: $color-primary;
+  color: $color-text-white;
+  font-size: 24rpx;
+  border-radius: $radius-button;
+  &.outline {
+    background: transparent;
+    border: 2rpx solid $color-primary;
+    color: $color-primary;
+  }
+  &:active {
+    opacity: 0.9;
+  }
+}
+
+.protocolBox {
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-sm;
+  padding: $spacing-md 0;
+}
+
+.checkbox {
+  width: 36rpx;
+  height: 36rpx;
+  border-radius: $radius-round;
+  border: 2rpx solid $color-border;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 4rpx;
+  &.checked {
+    background: $color-primary;
+    border-color: $color-primary;
+    color: $color-text-white;
+  }
+}
+
+.protocolText {
+  font-size: 24rpx;
+  color: $color-text-secondary;
+  line-height: 1.6;
+  flex: 1;
+}
+
+.protocolLink {
+  color: $color-primary;
+}
+
+.footerBar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: $color-bg-card;
+  padding: $spacing-md $page-padding;
+  padding-bottom: calc($spacing-md + env(safe-area-inset-bottom));
+  box-shadow: 0 -4rpx 20rpx rgba(0, 0, 0, 0.06);
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+}
+
+.feeInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.feeLabel {
+  font-size: 22rpx;
+  color: $color-text-tertiary;
+}
+
+.feeAmount {
+  font-size: 24rpx;
+  color: $color-text-secondary;
+}
+
+.feeAmountValue {
+  color: $color-price;
+  font-weight: $font-weight-semibold;
+}
+
+.submitBtn {
+  @include button-reset;
+  height: $button-height-lg;
+  padding: 0 $spacing-xl;
+  min-width: 240rpx;
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  color: $color-text-white;
+  font-size: 30rpx;
+  font-weight: $font-weight-semibold;
+  border-radius: $radius-button;
+  box-shadow: 0 8rpx 24rpx rgba(16, 185, 129, 0.3);
+  transition: all $transition-base;
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+  &.disabled {
+    background: $color-text-disabled;
+    box-shadow: none;
+  }
+}

@@ -1,0 +1,194 @@
+@use '@/styles/variables.scss' as *;
+
+.card {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-md;
+  transition: all $transition-base;
+  &:active {
+    transform: scale(0.99);
+    box-shadow: $shadow-card-hover;
+  }
+}
+
+.cardInner {
+  display: flex;
+  padding: $spacing-md;
+  gap: $spacing-md;
+}
+
+.coverWrap {
+  width: 200rpx;
+  height: 200rpx;
+  border-radius: $radius-md;
+  overflow: hidden;
+  flex-shrink: 0;
+  position: relative;
+  background: $color-bg-tag;
+}
+
+.cover {
+  width: 100%;
+  height: 100%;
+}
+
+.verifiedBadge {
+  position: absolute;
+  top: 8rpx;
+  left: 8rpx;
+  background: $color-primary;
+  color: $color-text-white;
+  font-size: 20rpx;
+  padding: 4rpx 10rpx;
+  border-radius: $radius-xs;
+  display: flex;
+  align-items: center;
+  gap: 4rpx;
+}
+
+.content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: $spacing-sm;
+}
+
+.title {
+  flex: 1;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  line-height: 1.4;
+  @include text-ellipsis-multi(2);
+}
+
+.gameTag {
+  flex-shrink: 0;
+  background: $color-secondary-bg;
+  color: $color-secondary;
+  font-size: 20rpx;
+  padding: 4rpx 12rpx;
+  border-radius: $radius-xs;
+  white-space: nowrap;
+}
+
+.metaRow {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  margin-top: $spacing-sm;
+}
+
+.rankTag {
+  background: $color-gold-bg;
+  color: $color-gold;
+  font-size: 22rpx;
+  padding: 4rpx 12rpx;
+  border-radius: $radius-xs;
+  font-weight: $font-weight-medium;
+}
+
+.serverName {
+  font-size: 22rpx;
+  color: $color-text-tertiary;
+  @include text-ellipsis;
+}
+
+.tagList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8rpx;
+  margin-top: $spacing-sm;
+}
+
+.tag {
+  background: $color-bg-tag;
+  color: $color-text-secondary;
+  font-size: 20rpx;
+  padding: 4rpx 12rpx;
+  border-radius: $radius-xs;
+  white-space: nowrap;
+}
+
+.tagHighlight {
+  background: $color-primary-bg;
+  color: $color-primary;
+  font-weight: $font-weight-medium;
+}
+
+.sellerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: $spacing-md;
+  padding-top: $spacing-md;
+  border-top: 1rpx solid $color-divider;
+}
+
+.sellerInfo {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  min-width: 0;
+}
+
+.avatar {
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: $radius-round;
+  flex-shrink: 0;
+}
+
+.sellerName {
+  font-size: 22rpx;
+  color: $color-text-secondary;
+  @include text-ellipsis;
+  max-width: 140rpx;
+}
+
+.priceRow {
+  display: flex;
+  align-items: baseline;
+  gap: 8rpx;
+}
+
+.price {
+  color: $color-price;
+  font-size: 34rpx;
+  font-weight: $font-weight-bold;
+}
+
+.pricePrefix {
+  font-size: 22rpx;
+}
+
+.originalPrice {
+  color: $color-text-tertiary;
+  font-size: 22rpx;
+  text-decoration: line-through;
+}
+
+.priceTypeTag {
+  margin-left: 8rpx;
+  font-size: 20rpx;
+  padding: 2rpx 10rpx;
+  border-radius: $radius-xs;
+  &.negotiable {
+    background: $color-warning-bg;
+    color: $color-warning;
+  }
+  &.fixed {
+    background: $color-bg-tag;
+    color: $color-text-secondary;
+  }
+}
